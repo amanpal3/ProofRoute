@@ -1,0 +1,58 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+
+# Build artifacts & outputs
+dist/
+build/
+out/
+.next/
+*.tsbuildinfo
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+
+# Smart Contracts
+artifacts/
+cache/
+broadcast/
+
+# Environment and Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ML checkpoints & datasets
+ml/models/*.onnx
+ml/models/*.pt
+ml/models/*.pkl
+ml/data/raw/
+ml/data/processed/
