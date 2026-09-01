@@ -2,184 +2,210 @@
 
 <div align="center">
 
-**Decentralized Provenance, AI Document Verification & Autonomous Risk Routing Platform**
+<h3>Decentralized Provenance, AI Document Verification & Autonomous Risk Routing</h3>
+
+<p>
+ProofRoute provides cryptographic authenticity proofs and multimodal AI-powered tampering detection to eliminate document fraud across supply chains, legal registries, and financial agreements.
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Foundry](https://img.shields.io/badge/Foundry-Solidity-orange.svg)](https://getfoundry.sh/)
+[![Foundry](https://img.shields.io/badge/Solidity-Foundry-orange.svg)](https://getfoundry.sh/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688.svg)](https://fastapi.tiangolo.com/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-ML-EE4C2C.svg)](https://pytorch.org/)
-[![Code Style](https://img.shields.io/badge/Code_Style-Ruff_%7C_Prettier-informational.svg)](CONTRIBUTING.md)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.11+-009688.svg)](https://fastapi.tiangolo.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C.svg)](https://pytorch.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-336791.svg)](https://www.postgresql.org/)
+[![Redis](https://img.shields.io/badge/Redis-7.x-DC382D.svg)](https://redis.io/)
 
-[Overview](#-overview) • [Architecture](#-architecture) • [Features](#-key-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [Workspaces](#-workspaces) • [Agent System](#-agent-system) • [Documentation](#-documentation)
+[Key Features](#-key-features) • [System Architecture](#-system-architecture) • [Quick Start](#-quick-start) • [Workspaces](#-workspaces-breakdown) • [API Guide](#-api-quick-reference) • [Agent System](#-autonomous-agent-orchestration) • [Documentation](#-documentation-index)
 
 </div>
 
 ---
 
-## 📌 Overview
-
-**ProofRoute** is a full-stack platform that combines immutable blockchain attestations, deep learning document verification, real-time blockchain event indexing, and automated risk scoring to eliminate document fraud across financial, supply chain, and legal workflows.
-
-### The Problem
-- **Rampant Document Tampering**: Copy-move forgery, digital splicing, and font alterations in critical certificates and invoices.
-- **Verification Bottlenecks**: Manual document inspection takes days and is vulnerable to human oversight.
-- **Centralized Audit Trails**: Fragile records that can be modified, deleted, or disputed.
-
-### The ProofRoute Solution
-- **On-Chain Cryptographic Anchoring**: Store tamper-proof cryptographic hashes and zero-knowledge commitments on EVM-compatible chains.
-- **Multimodal AI Verification**: Real-time neural network analysis for copy-move tampering, metadata anomalies, and OCR discrepancy detection.
-- **Instant Risk Routing**: Weighted scoring engines categorize submission risk (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`) and trigger automated workflows or human escalation.
-- **Zero-Latency Indexed Queries**: Custom event indexers maintain high-performance relational and cached state for sub-second verification lookups.
+## 📖 Table of Contents
+- [📌 Overview](#-overview)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture](#-system-architecture)
+- [🛠️ Tech Stack](#-tech-stack)
+- [📂 Repository Layout](#-repository-layout)
+- [🚀 Quick Start & Local Setup](#-quick-start--local-setup)
+- [📦 Workspaces Breakdown](#-workspaces-breakdown)
+  - [Smart Contracts (`contracts/`)](#1-smart-contracts-contracts)
+  - [Backend API (`backend/`)](#2-backend-service-backend)
+  - [Frontend Portal (`frontend/`)](#3-frontend-client-frontend)
+  - [ML Pipeline (`ml/`)](#4-ml-verification-engine-ml)
+  - [Scripts & Automation (`scripts/`)](#5-scripts--automation-scripts)
+  - [Test Suites (`tests/`)](#6-test-suites-tests)
+- [📡 API Quick Reference](#-api-quick-reference)
+- [🤖 Autonomous Agent Orchestration](#-autonomous-agent-orchestration)
+- [🔐 Security & Threat Model](#-security--threat-model)
+- [📚 Documentation Index](#-documentation-index)
+- [🤝 Contributing & Community](#-contributing--community)
+- [📄 License](#-license)
 
 ---
 
-## 🏗️ Architecture
+## 📌 Overview
 
-```mermaid
-flowchart TB
-    subgraph ClientLayer["🖥️ Client & Ingestion Layer"]
-        WebApp["Next.js Web Client<br/>(Wagmi / Viem / Tailwind)"]
-        IssuerClient["Issuer SDK / CLI"]
-        ExternalAPI["External API Consumers"]
-    end
+**ProofRoute** bridges the gap between on-chain cryptographic permanence and real-world document verification. 
 
-    subgraph APILayer["⚡ API Gateway & Coordinator (FastAPI)"]
-        Gateway["REST & WebSocket Gateway"]
-        AuthService["Auth & Access Control (JWT / Web3)"]
-        JobQueue["Async Worker Queue (Redis / Celery)"]
-    end
+### Why ProofRoute?
+1. **The Tampering Crisis**: Conventional documents (invoices, certificates, bills of lading, titles) are easily manipulated using digital editing tools with zero trace to the naked eye.
+2. **Slow, Manual Audits**: Verifying signatures and physical seals manually creates weeks of delay in high-throughput workflows.
+3. **Fragile Centralized Logs**: Databases can be altered, wiped, or disputed when disputes arise.
 
-    subgraph MLLayer["🧠 ML Verification Pipeline"]
-        LayoutOCR["OCR & Layout Extraction (TrOCR / Tesseract)"]
-        TamperModel["Image Tampering & Forgery Detection"]
-        RiskEngine["Multi-Factor Risk Scoring Engine"]
-    end
-
-    subgraph ChainLayer["⛓️ Blockchain & Indexing"]
-        Contracts["Smart Contracts (DocumentRegistry.sol)"]
-        EVMNode["EVM Chain / Rollup (Sepolia / Arbitrum)"]
-        Indexer["Real-Time Event Listener & Indexer"]
-    end
-
-    subgraph DataLayer["💾 Persistence Layer"]
-        PG[(PostgreSQL 15+)]
-        Redis[(Redis Cache)]
-        IPFS[("Decentralized Storage (IPFS / S3)")]
-    end
-
-    WebApp --> Gateway
-    IssuerClient --> Gateway
-    ExternalAPI --> Gateway
-
-    Gateway --> AuthService
-    Gateway --> JobQueue
-    Gateway --> PG
-    Gateway --> Redis
-
-    JobQueue --> LayoutOCR
-    JobQueue --> TamperModel
-    TamperModel --> RiskEngine
-    RiskEngine --> Gateway
-
-    Gateway --> Contracts
-    Contracts --> EVMNode
-    Indexer --> EVMNode
-    Indexer --> PG
-    Gateway --> IPFS
+### How It Works
+```
++------------------+       +-------------------+       +---------------------+
+| 1. Ingestion     | ----> | 2. AI Inspection  | ----> | 3. On-Chain Check   |
+| Client uploads   |       | OCR, ELA & Copy-  |       | Query hash registry |
+| doc & hashes it  |       | Move Detection    |       | & issuer signatures |
++------------------+       +-------------------+       +---------------------+
+                                                                  |
+                                                                  v
++------------------+       +-------------------+       +---------------------+
+| 6. Audit Trail   | <---- | 5. Visual Portal  | <---- | 4. Risk Routing     |
+| Real-time event  |       | Tamper heatmap &  |       | Score (0-100) routes|
+| indexer updates  |       | proof certificate |       | auto-pass / escalate|
++------------------+       +-------------------+       +---------------------+
 ```
 
 ---
 
 ## ✨ Key Features
 
-| Capability | Description |
-|---|---|
-| **🔒 Immutable Attestations** | Cryptographic hash anchors and issuer signatures deployed via gas-optimized Solidity contracts. |
-| **🔍 AI Tamper Detection** | Detects subtle digital manipulations, splicing, font discrepancies, and compression artifacts. |
-| **⚡ Sub-Second Verification** | Real-time query engine backed by blockchain event indexers and PostgreSQL indexing. |
-| **📊 Explainable Risk Scoring** | Multi-factor risk breakdown (0–100) with visual tamper heatmaps for verifiers. |
-| **💼 Issuer Dashboard & Explorer** | Batch upload, digital signing via Web3 wallets, and public verification explorer. |
-| **🤖 Autonomous Agent Swarm** | Built-in domain skills and automated workflows for testing, indexing, and smart contract development. |
+- **🔒 Immutable Blockchain Anchoring**: Document hashes (Keccak-256 / SHA-256) and issuer metadata are recorded irreversibly via gas-optimized Solidity contracts.
+- **🧠 Multimodal AI Verification**:
+  - **Error Level Analysis (ELA)**: Detects compression anomalies from digital splicing.
+  - **Copy-Move Forgery Detection**: Identifies duplicated stamps, signatures, or altered digits.
+  - **OCR & Layout Analysis**: Cross-references visual text against structured metadata fields.
+- **⚡ Sub-Second Lookups**: Dedicated blockchain event indexers synchronize on-chain states into PostgreSQL and Redis for instant search and verification.
+- **📊 Dynamic Risk Routing**: Calculates a composite Risk Score (`0-100`), auto-approving trusted proofs or routing flagged documents for escalation.
+- **💼 Web3-Native Issuer Dashboard**: Connect wallets (MetaMask, Coinbase, WalletConnect), batch-anchor documents, and manage role-based issuing authority.
+- **🔍 Public Verification Explorer**: Anyone can drag and drop a file to compute its client-side hash and verify authenticity without uploading sensitive contents.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TB
+    subgraph Clients["🖥️ Clients & Integrations"]
+        WebApp["Next.js Web Portal<br/>(Tailwind CSS + Wagmi)"]
+        IssuerCLI["Issuer CLI / SDK"]
+        ThirdParty["Enterprise API Clients"]
+    end
+
+    subgraph API["⚡ Backend Gateway (FastAPI)"]
+        Router["API Gateway / v1"]
+        Auth["Auth & Web3 Signature Validator"]
+        TaskQueue["Redis Task Queue / Background Workers"]
+    end
+
+    subgraph ML["🧠 Multimodal ML Verification"]
+        OCR["OCR & Entity Extractor (TrOCR)"]
+        ELA["Error Level Analysis (ELA)"]
+        Tamper["Copy-Move & Deep Forgery Classifier"]
+        Scorer["Composite Risk Scoring Engine"]
+    end
+
+    subgraph Chain["⛓️ Blockchain & Indexing"]
+        Registry["DocumentRegistry.sol"]
+        AccessCtrl["AccessManager.sol"]
+        EVMNode["EVM Chain (Sepolia / Arbitrum / Mainnet)"]
+        Indexer["Block Event Listener & Sync Service"]
+    end
+
+    subgraph Storage["💾 Persistence & Decentralized Storage"]
+        Postgres[(PostgreSQL 15+)]
+        RedisCache[(Redis Cache & Pub/Sub)]
+        IPFS[("Decentralized Storage / S3")]
+    end
+
+    Clients --> Router
+    Router --> Auth
+    Router --> TaskQueue
+    Router --> Postgres
+    Router --> RedisCache
+
+    TaskQueue --> OCR
+    TaskQueue --> ELA
+    TaskQueue --> Tamper
+    OCR & ELA & Tamper --> Scorer
+    Scorer --> Postgres
+
+    Router --> Registry
+    Registry --> EVMNode
+    AccessCtrl --> EVMNode
+    Indexer --> EVMNode
+    Indexer --> Postgres
+    Router --> IPFS
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Domain | Technology | Purpose |
-|---|---|---|
-| **Smart Contracts** | Solidity (`>=0.8.20`), Foundry (`forge`, `cast`, `anvil`) | Core registries, access control, immutable anchoring |
-| **Backend API** | Python 3.11+, FastAPI, Pydantic, SQLAlchemy, Alembic | High-throughput REST API, verification router |
-| **Frontend** | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, shadcn/ui | Verifier portal, issuer dashboard, visual inspection |
-| **Web3 & Wallet UX** | Wagmi, Viem, RainbowKit | Wallet connection, transaction signing, contract calls |
-| **Machine Learning** | PyTorch, OpenCV, TrOCR / Tesseract, NumPy, Scikit-learn | Tamper detection, OCR extraction, anomaly scoring |
-| **Database & Cache** | PostgreSQL 15, Redis 7 | Relational indexing, fast lookup caching, task queues |
-| **Testing** | Foundry, Pytest, Playwright, Vitest | Unit, integration, invariant fuzzing, and E2E testing |
+| Domain | Technology | Version | Purpose |
+|---|---|---|---|
+| **Smart Contracts** | Solidity | `^0.8.20` | Core registry, role management, access control |
+| **Contract Tooling** | Foundry | Latest | Compilation, testing, fuzzing, deployments |
+| **Backend API** | Python / FastAPI | `3.11+` | Asynchronous REST API, verification router |
+| **ORM & DB** | SQLAlchemy / PostgreSQL | `15+` | Relational data models, indexing, ACID compliance |
+| **Caching & Queue** | Redis | `7+` | Token caching, pub/sub, async task queue |
+| **Machine Learning** | PyTorch / OpenCV | `2.x` | Deep learning models, image forensics, OCR |
+| **Frontend Framework** | Next.js (App Router) | `15.x` | Server components, client portal, explorer |
+| **UI & Styling** | Tailwind CSS / shadcn/ui | `3.4+` | Accessible, responsive, modern interface |
+| **Web3 Libraries** | Wagmi / Viem | `2.x` | Wallet connections, contract reads/writes |
+| **Testing** | Foundry, Pytest, Playwright | - | Unit, integration, invariant, and E2E testing |
 
 ---
 
-## 📂 Repository Structure
+## 📂 Repository Layout
 
 ```
 ProofRoute/
-├── contracts/                       # Smart contracts & Foundry environment
-│   ├── src/                         # Solidity source contracts
-│   ├── test/                        # Fuzz & invariant contract tests
-│   └── script/                      # Deployment scripts
-├── frontend/                        # Next.js web application
-│   ├── src/app/                     # Next.js App Router pages
+├── contracts/                       # Smart contracts (Solidity / Foundry)
+│   ├── src/                         # Core contracts (DocumentRegistry, AccessManager)
+│   ├── test/                        # Unit, fuzz, and invariant tests
+│   └── script/                      # Deployment and upgrade scripts
+├── frontend/                        # Web application (Next.js 15 App Router)
+│   ├── src/app/                     # Pages, routes, layouts
 │   ├── src/components/              # UI components & Web3 widgets
-│   └── src/lib/                     # API clients, Wagmi configs
-├── backend/                         # Core API & business services
-│   ├── app/api/                     # REST endpoint routers
-│   ├── app/services/                # Core business & verification logic
-│   └── app/models/                  # Database schemas & Pydantic models
-├── ml/                              # Machine Learning models & pipelines
-│   ├── src/pipeline/                # Feature extraction & tampering models
-│   └── models/                      # Model weights & preprocessing configs
-├── scripts/                         # Database migrations, seeding & node scripts
-├── tests/                           # Cross-package E2E & integration test suites
-├── docs/                            # Specifications, API contracts, Architecture
-│   ├── PRD.md                       # Product Requirements Document
-│   ├── ARCHITECTURE.md              # Detailed architecture breakdown
-│   ├── API_CONTRACT.md              # REST/WebSocket API specification
-│   ├── DATABASE.md                  # Database schema & ERD
-│   ├── UI_UX.md                     # Design tokens & UX flow specification
-│   ├── DEVELOPMENT_PLAN.md          # Phased roadmap & milestones
-│   ├── TESTING_PLAN.md              # Testing strategy & coverage targets
-│   ├── SECURITY.md                  # Security policies & threat model
-│   ├── DEPLOYMENT.md                # CI/CD & cloud infrastructure guide
-│   └── DECISIONS.md                 # Architecture Decision Records (ADRs)
-└── .agents/                         # Autonomous multi-agent configuration
-    ├── AGENTS.md                    # Agent orchestration guide
-    ├── skills/                      # Domain skill manuals for AI agents
-    └── workflows/                   # Standard operational procedures
+│   └── src/lib/                     # API client, Web3 client configs
+├── backend/                         # Backend API (FastAPI / PostgreSQL)
+│   ├── app/api/                     # REST API routers (documents, auth, risk)
+│   ├── app/services/                # Core business logic & blockchain clients
+│   └── app/models/                  # Database models & Pydantic schemas
+├── ml/                              # Machine Learning Pipeline
+│   ├── src/                         # Forgery detection, OCR, and scoring modules
+│   └── models/                      # Model checkpoints & configurations
+├── scripts/                         # Operational & DevOps scripts
+├── tests/                           # Cross-domain integration & Playwright E2E suites
+├── docs/                            # Complete technical documentation suite
+└── .agents/                         # Autonomous multi-agent skills & workflows
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Local Setup
 
-### 1. Prerequisites
-Make sure you have installed:
-- [Node.js](https://nodejs.org/) (>= 18.x) & npm/pnpm
-- [Python](https://python.org/) (>= 3.10) & pip
-- [Foundry](https://book.getfoundry.sh/getting-started/installation) (`forge`, `cast`, `anvil`)
-- [Docker](https://www.docker.com/) & Docker Compose (optional, for local DB & Redis)
+### Prerequisites
+- **Node.js**: `v18.x` or higher
+- **Python**: `3.10` or higher
+- **Foundry**: [Install Foundry](https://book.getfoundry.sh/getting-started/installation) (`curl -L https://foundry.paradigm.xyz | bash`)
+- **Docker** *(Optional, recommended for PostgreSQL & Redis)*
 
-### 2. Clone & Environment Setup
+### Step 1: Clone Repository & Configure Environment
 ```bash
-# Clone the repository
 git clone https://github.com/your-org/proofroute.git
 cd ProofRoute
 
-# Copy environment variables template
+# Create local environment config
 cp .env.example .env
 ```
 
-### 3. Initialize Services
-
-#### Smart Contracts
+### Step 2: Start Smart Contract Environment (Foundry)
 ```bash
 cd contracts
 forge install
@@ -187,73 +213,132 @@ forge build
 forge test
 ```
 
-#### Backend API
+### Step 3: Run Backend Service
 ```bash
 cd ../backend
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# On Linux/macOS:
+source .venv/bin/activate
+# On Windows:
+.venv\Scriptsctivate
+
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
+API will be live at `http://localhost:8000`. Interactive OpenAPI documentation available at `http://localhost:8000/docs`.
 
-#### Frontend Client
+### Step 4: Run Frontend Client
 ```bash
 cd ../frontend
 npm install
 npm run dev
 ```
+Frontend portal will be live at `http://localhost:3000`.
 
 ---
 
-## 📦 Workspaces
+## 📦 Workspaces Breakdown
 
-- [contracts/](contracts/) — Smart contracts, deployment scripts, and Foundry invariant tests.
-- [backend/](backend/) — FastAPI gateway, task queue workers, and indexing coordinator.
-- [frontend/](frontend/) — Next.js portal for verification, batch anchoring, and risk exploration.
-- [ml/](ml/) — Multimodal verification pipelines, tamper detection, and risk scoring.
-- [scripts/](scripts/) — Migration runners, deployment helpers, and local testnet scripts.
-- [tests/](tests/) — End-to-end user journey tests and cross-service integration suites.
+### 1. Smart Contracts (`contracts/`)
+The decentralized foundation for anchoring documents.
+- [`DocumentRegistry.sol`](contracts/): Stores document hashes, timestamps, issuer IDs, and revocation states.
+- [`AccessManager.sol`](contracts/): Role-based permissions (`ISSUER_ROLE`, `AUDITOR_ROLE`, `ADMIN_ROLE`).
+- *See [contracts/README.md](contracts/README.md) for testing commands, gas reports, and deployment scripts.*
+
+### 2. Backend Service (`backend/`)
+High-performance asynchronous API for orchestrating verifications.
+- Handles document uploads, client-side hash checks, database persistence, and background queue workers.
+- *See [backend/README.md](backend/README.md) for route documentation, database migrations, and configurations.*
+
+### 3. Frontend Client (`frontend/`)
+User-facing portal for document verification and management.
+- Public drag-and-drop hash checker (client-side SHA-256 calculation).
+- Web3 wallet dashboard for issuers to batch-sign and anchor document registries.
+- *See [frontend/README.md](frontend/README.md) for component architecture and environment setups.*
+
+### 4. ML Verification Engine (`ml/`)
+Multimodal AI models for forgery detection.
+- Deep image forensics, Error Level Analysis (ELA), and OCR text consistency checking.
+- *See [ml/README.md](ml/README.md) for training pipelines, model checkpoints, and inference APIs.*
+
+### 5. Scripts & Automation (`scripts/`)
+Utility scripts for local testnet launching, database seeding, and smart contract verification.
+- *See [scripts/README.md](scripts/README.md) for script catalogues and usage guides.*
+
+### 6. Test Suites (`tests/`)
+Comprehensive end-to-end and cross-workspace integration tests.
+- *See [tests/README.md](tests/README.md) for testing pyramid guidelines and CI configurations.*
 
 ---
 
-## 🤖 Agent System
+## 📡 API Quick Reference
 
-ProofRoute is built with native support for autonomous agent pairing and domain-specific roles.
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/v1/documents/verify` | Verify document authenticity & run ML risk analysis |
+| `POST` | `/api/v1/documents/anchor` | Register and anchor new document hash on-chain |
+| `GET` | `/api/v1/documents/{hash}` | Retrieve indexed on-chain and verification history |
+| `POST` | `/api/v1/ml/risk-score` | Direct inference endpoint for ML tampering analysis |
+| `GET` | `/api/v1/health` | Service health status (DB, Redis, RPC, ML) |
 
-```
-.agents/
-├── AGENTS.md                   # Agent guidelines & orchestration rules
-├── skills/                     # Domain skills (backend, frontend, blockchain, ml, etc.)
-└── workflows/                  # Workflows (feature-development, bug-fix, testing, release)
-```
+*Full API contracts and schemas are defined in [docs/API_CONTRACT.md](docs/API_CONTRACT.md).*
 
-Refer to [AGENTS.md](AGENTS.md) and [.agents/AGENTS.md](.agents/AGENTS.md) for full orchestration guidelines.
+---
+
+## 🤖 Autonomous Agent Orchestration
+
+ProofRoute is architected for seamless multi-agent autonomy. The repository includes domain skills and operational workflows in `.agents/`:
+
+| Domain Skill | Path | Description |
+|---|---|---|
+| **Blockchain** | [`.agents/skills/blockchain/SKILL.md`](.agents/skills/blockchain/SKILL.md) | Smart contract development, gas optimization, Foundry fuzzing |
+| **Backend** | [`.agents/skills/backend/SKILL.md`](.agents/skills/backend/SKILL.md) | FastAPI services, Pydantic validation, business logic |
+| **Frontend** | [`.agents/skills/frontend/SKILL.md`](.agents/skills/frontend/SKILL.md) | Next.js App Router, Tailwind, Wagmi/Viem integration |
+| **Doc Verification** | [`.agents/skills/document-verification/SKILL.md`](.agents/skills/document-verification/SKILL.md) | OCR extraction, ELA, copy-move detection |
+| **Risk Analysis** | [`.agents/skills/risk-analysis/SKILL.md`](.agents/skills/risk-analysis/SKILL.md) | Composite scoring algorithms, fraud heuristics |
+| **Indexer** | [`.agents/skills/indexer/SKILL.md`](.agents/skills/indexer/SKILL.md) | Blockchain event listeners and reorg handling |
+| **Testing** | [`.agents/skills/testing/SKILL.md`](.agents/skills/testing/SKILL.md) | Unit, integration, invariant, and E2E testing |
+
+Review [AGENTS.md](AGENTS.md) for cross-domain orchestration guidelines.
+
+---
+
+## 🔐 Security & Threat Model
+
+- **Zero PII On-Chain**: No personal or confidential document contents are ever stored on-chain. Only cryptographic hashes and zero-knowledge commitments are anchored.
+- **Reentrancy & Access Control**: Contracts utilize OpenZeppelin's battle-tested security primitives.
+- **Client-Side Hashing Option**: Users can verify files by computing hashes locally in their browser without uploading the file payload to the backend server.
+- **Security Inquiries**: For vulnerabilities, please contact `security@proofroute.io`. See [docs/SECURITY.md](docs/SECURITY.md).
 
 ---
 
 ## 📚 Documentation Index
 
-| Document | Purpose |
+| Document | Description |
 |---|---|
-| [PRD.md](docs/PRD.md) | Product goals, problem statement, user personas, requirements |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System components, data flows, and technical design |
-| [API_CONTRACT.md](docs/API_CONTRACT.md) | REST endpoints, request/response models, and status codes |
-| [DATABASE.md](docs/DATABASE.md) | Relational schema, ER diagram, indexing, and migration rules |
-| [UI_UX.md](docs/UI_UX.md) | Design system, token hierarchy, and core interactive flows |
-| [DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) | Phased milestones, deliverables, and tracking |
-| [TESTING_PLAN.md](docs/TESTING_PLAN.md) | Unit, integration, fuzzing, and E2E testing framework |
-| [SECURITY.md](docs/SECURITY.md) | Threat modeling, zero-knowledge handling, and audit guidelines |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Staging/Production environments, CI/CD, and infra setups |
-| [DECISIONS.md](docs/DECISIONS.md) | Architecture Decision Records (ADR log) |
+| [📖 docs/PRD.md](docs/PRD.md) | Product Requirements Document & specifications |
+| [🏛️ docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Comprehensive system architecture & data flows |
+| [📜 docs/API_CONTRACT.md](docs/API_CONTRACT.md) | Complete OpenAPI endpoint schemas and contracts |
+| [🗄️ docs/DATABASE.md](docs/DATABASE.md) | PostgreSQL schema, ER diagram, and migration rules |
+| [🎨 docs/UI_UX.md](docs/UI_UX.md) | Design tokens, typography, and interactive wireframes |
+| [📅 docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md) | Milestone roadmap and execution phases |
+| [🧪 docs/TESTING_PLAN.md](docs/TESTING_PLAN.md) | Testing pyramid, invariants, and quality gates |
+| [🛡️ docs/SECURITY.md](docs/SECURITY.md) | Threat model, zero-knowledge policies & audit standards |
+| [🌐 docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | CI/CD, cloud infrastructure, and network configs |
+| [📝 docs/DECISIONS.md](docs/DECISIONS.md) | Architecture Decision Records (ADRs) |
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing & Community
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for our branch strategy, Conventional Commits standard, and pull request checklist.
+We welcome contributions from developers, researchers, and security auditors!
+1. Check open issues or review [docs/DEVELOPMENT_PLAN.md](docs/DEVELOPMENT_PLAN.md).
+2. Follow our [CONTRIBUTING.md](CONTRIBUTING.md) guide and use Conventional Commits.
+3. Submit a Pull Request against the `develop` branch.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the terms of the **MIT License**. See [LICENSE](LICENSE) for details.
