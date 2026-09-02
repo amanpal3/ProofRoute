@@ -1,0 +1,99 @@
+ProofRoute Technology Stack & Base 
+
+  ProofRoute is built on a Hybrid Web3 + Full-Stack Python/TypeScript + AI Forensics
+  technology base.
+  ──────
+  ## 🏗️ Core Technology Base by Layer
+
+    ┌────────────────────────────────────────────────────────┐
+    │               1. FRONTEND / CLIENT LAYER               │
+    │  Next.js 14+ (App Router) • React 18 • TypeScript     │
+    │  Tailwind CSS • Wagmi 2.x • Viem 2.x • TanStack Query  │
+    └──────────────────────────┬─────────────────────────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                ▼                             ▼
+    ┌─────────────────────────┐  ┌───────────────────────────┐
+    │ 2. BLOCKCHAIN / WEB3    │  │   3. BACKEND & API LAYER  │
+    │ Solidity ^0.8.20        │  │ FastAPI (Python 3.11+)    │
+    │ Foundry (Forge/Anvil)   │  │ Pydantic v2 • Uvicorn     │
+    │ OpenZeppelin 5.x        │  │ SHA-256 (hashlib) • QR    │
+    │ EVM / Testnet           │  └─────────────┬─────────────┘
+    └───────────┬─────────────┘                │
+                │ Event Logs                   │
+                ▼                              ▼
+    ┌─────────────────────────┐  ┌───────────────────────────┐
+    │ 4. INDEXER & PERSISTENCE│  │  5. AI / ML RISK ENGINE   │
+    │ Web3.py Event Indexer   │  │ scikit-learn • Pandas     │
+    │ PostgreSQL              │  │ OpenCV (ELA / CMFD)       │
+    │ SQLAlchemy 2.x (Async)  │  │ Tesseract / TrOCR         │
+    │ Alembic Migrations      │  │ Explainable Risk Scoring  │
+    └─────────────────────────┘  └───────────────────────────┘
+  ──────
+  ## 📌 Detailed Technology Breakdown
+
+  ### 1. ⛓️ Blockchain & Smart Contracts Base
+
+  • Language: Solidity https://soliditylang.org/ ^0.8.20
+  • Development Tooling: Foundry https://getfoundry.sh/ (forge for building/testing/fuzzing,   
+  anvil for local EVM chain, cast for CLI calls)
+  • Standard Library: OpenZeppelin Contracts 5.x https://openzeppelin.com/contracts/
+  • Core Contract: README.md
+  • Target Network: Local Anvil Node ➔ EVM Testnet (Sepolia / Polygon Amoy)
+  ──────
+  ### 2. 🖥️ Frontend & Web3 UX Base
+
+  • Framework: Next.js 14+ https://nextjs.org/ (React 18, App Router)
+  • Language: TypeScript https://www.typescriptlang.org/
+  • Styling & UI: Tailwind CSS https://tailwindcss.com/ + Lucide React https://lucide.dev/     
+  • Web3 Wallet Client: Wagmi 2.x https://wagmi.sh/ + Viem 2.x https://viem.sh/
+  • State & Data Fetching: TanStack Query https://tanstack.com/query/latest (React Query)      
+  • Key Feature: No-wallet requirement for consumers scanning QR verification pages.
+  ──────
+  ### 3. ⚙️ Backend & API Base
+
+  • Language: Python 3.11+ https://www.python.org/
+  • Framework: FastAPI https://fastapi.tiangolo.com/ (high performance, asynchronous REST      
+  API)
+  • Data Validation & Settings: Pydantic v2 https://docs.pydantic.dev/latest/
+  • ASGI Server: Uvicorn https://www.uvicorn.org/
+  • Cryptography & Hashing: Standard library hashlib (SHA-256 for deterministic off-
+  chain/on-chain hash matching)
+  • API Spec: Documented in API_CONTRACT.md
+  ──────
+  ### 4. 🗄️ Database & Event Indexing Base
+
+  • Database: PostgreSQL https://www.postgresql.org/
+  • ORM: SQLAlchemy 2.x https://www.sqlalchemy.org/ (Async Engine)
+  • DB Driver: psycopg (v3) / asyncpg
+  • Schema Migrations: Alembic https://alembic.sqlalchemy.org/
+  • Event Indexer: Custom Python async listener using web3.py, tracking (transaction_hash,     
+  log_index) for guaranteed idempotency.
+  ──────
+  ### 5. 🧠 AI / ML Risk & Document Forensics Base
+
+  • Risk Scoring: scikit-learn https://scikit-learn.org/, NumPy https://numpy.org/, Pandas     
+  https://pandas.pydata.org/
+  • Image Forensics: OpenCV https://opencv.org/ (Error Level Analysis - ELA & Copy-Move        
+  Forgery Detection - CMFD)
+  • OCR Text Extraction: Tesseract OCR / TrOCR
+  • Explainability: Transparent reason codes, confidence score (0–100), risk levels (LOW |     
+  MEDIUM | HIGH), and disclaimer.
+  ──────
+  ### 6. 🧪 Testing & Quality Assurance
+
+  • Contract Tests: forge test (Unit tests + Property-based Fuzzing)
+  • Backend & ML Tests: pytest, httpx
+  • Frontend Tests: vitest, React Testing Library
+  • End-to-End User Journey: Playwright
+  ──────
+  ## 💡 Why This Specific Tech Base?
+
+  1. Lightweight On-Chain Gas Optimization: Only store immutable proofs (SHA-256 document      
+  hashes, status transitions, product IDs) on-chain.
+  2. Speed & Scalability: PostgreSQL + FastAPI provide instant sub-second search, QR lookups,  
+  and rich timelines.
+  3. Frictionless Consumer Experience: Next.js + Viem allow anyone with a smartphone camera    
+  to verify products instantly without needing a crypto wallet or browser extension.
+  4. Transparent AI: Machine Learning operates off-chain strictly as decision support,
+  keeping the verification clear, fast, and explainable.
