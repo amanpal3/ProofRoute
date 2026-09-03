@@ -57,3 +57,10 @@ ml/models/*.pt
 ml/models/*.pkl
 ml/data/raw/
 ml/data/processed/
+
+
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
