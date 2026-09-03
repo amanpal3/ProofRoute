@@ -4,6 +4,7 @@ Product Service — orchestrates product creation, status transitions, and histo
 
 from typing import List, Sequence
 
+# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import (

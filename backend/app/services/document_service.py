@@ -8,6 +8,7 @@ repositories and external services, repositories handle data access.
 import os
 from typing import Optional, Tuple
 
+# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
