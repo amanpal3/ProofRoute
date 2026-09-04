@@ -4,6 +4,9 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_DB_PATH = os.path.join(BACKEND_DIR, "proofroute.db").replace("\\", "/")
+
 class Settings(BaseSettings):
     APP_NAME: str = "ProofRoute Backend Services"
     APP_ENV: str = "development"
@@ -30,7 +33,7 @@ class Settings(BaseSettings):
     # Database
     # Default to async sqlite for seamless local out-of-the-box development & testing,
     # or PostgreSQL when DATABASE_URL is configured (e.g. postgresql+asyncpg://...)
-    DATABASE_URL: str = "sqlite+aiosqlite:///./proofroute.db"
+    DATABASE_URL: str = f"sqlite+aiosqlite:///{DEFAULT_DB_PATH}"
 
     # Storage
     STORAGE_PROVIDER: str = "local"

@@ -8,6 +8,7 @@ import Web3TransactionModal from '@/components/issuer/Web3TransactionModal';
 import Button from '@/components/ui/Button';
 import { ProductItem } from '@/lib/types';
 import { TxStep } from '@/lib/tx';
+import { createProductBatch } from '@/lib/api';
 
 interface BatchRegisterFormProps {
   walletAccount: string | null;
@@ -144,7 +145,21 @@ export default function BatchRegisterForm({
               },
             ],
           };
-          onRegistered(newEntry);
+
+          createProductBatch({
+            id: generatedId,
+            name: productName || 'Certified Industrial Cargo Batch',
+            batchNumber: batchCode || `BATCH-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+            manufacturerAddress: walletAccount,
+            originCountry,
+            destinationCountry,
+            documentHash: attachedDoc.hash,
+            txHash: mockTx,
+          }).then((persisted) => {
+            onRegistered(persisted || newEntry);
+          }).catch(() => {
+            onRegistered(newEntry);
+          });
         }, 1200);
         timersRef.current.push(t3);
       }, 1000);
