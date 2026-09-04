@@ -121,6 +121,8 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 # ---------------------------------------------------------------------------
 api_prefix = settings.API_V1_PREFIX  # "/api/v1"
 
+# Health check available at both /health and /api/v1/health
+app.include_router(health.router)
 app.include_router(health.router,    prefix=api_prefix)
 app.include_router(products.router,  prefix=api_prefix)
 app.include_router(documents.router, prefix=api_prefix)
