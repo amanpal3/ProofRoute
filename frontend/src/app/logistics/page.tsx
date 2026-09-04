@@ -1,37 +1,47 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Truck,
-  MapPin,
-  CheckCircle2,
-  ArrowRight,
-  Package,
-} from 'lucide-react';
+import Link from 'next/link';
+import { Truck, MapPin, CheckCircle2, ArrowRight, Package } from 'lucide-react';
 import { SAMPLE_PRODUCTS } from '@/lib/mockData';
-import { ShipmentMilestoneStatus } from '@/lib/types';
+import { ProductItem, ShipmentMilestoneStatus } from '@/lib/types';
 import ShipmentTimeline from '@/components/timeline/ShipmentTimeline';
+import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
+
+const LOCATION_PRESETS = [
+  'Rotterdam Hub, Netherlands',
+  'Singapore Port, Singapore',
+  'Frankfurt Customs, Germany',
+  'John F. Kennedy Cargo Hub, New York, USA',
+];
 
 export default function LogisticsPortalPage() {
-  const [products, setProducts] = useState(SAMPLE_PRODUCTS);
+  const [products, setProducts] = useState<Record<string, ProductItem>>(SAMPLE_PRODUCTS);
   const [selectedProductId, setSelectedProductId] = useState('PR-8829-X');
-
-  // Milestone transition inputs
   const [targetStatus, setTargetStatus] = useState<ShipmentMilestoneStatus>('DELIVERED');
-  const [checkpointLocation, setCheckpointLocation] = useState('John F. Kennedy Cargo Hub, New York, USA');
+  const [checkpointLocation, setCheckpointLocation] = useState(LOCATION_PRESETS[3]);
   const [operatorId, setOperatorId] = useState('JFK Port Logistics Inspector #882');
-  const [checkpointNote, setCheckpointNote] = useState('Customs inspection passed. Cold-chain seal intact at -20°C. Batch accepted.');
+  const [checkpointNote, setCheckpointNote] = useState(
+    'Customs inspection passed. Cold-chain seal intact at -20°C. Batch accepted.'
+  );
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const currentProduct = products[selectedProductId];
 
   const handleUpdateMilestone = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentProduct) {
+      setFormError('Select a shipment before recording a checkpoint.');
+      return;
+    }
+    setFormError('');
     setIsUpdating(true);
     setUpdateSuccess(false);
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       const newMilestone = {
         id: `m-logistics-${Date.now()}`,
         status: targetStatus,
@@ -47,9 +57,10 @@ export default function LogisticsPortalPage() {
       const updatedMilestones = currentProduct.milestones.map((m) => ({
         ...m,
         current: false,
+        completed: true,
       }));
 
-      const updatedProduct = {
+      const updatedProduct: ProductItem = {
         ...currentProduct,
         status: targetStatus,
         milestones: [...updatedMilestones, newMilestone],
@@ -62,13 +73,12 @@ export default function LogisticsPortalPage() {
 
       setIsUpdating(false);
       setUpdateSuccess(true);
-      setTimeout(() => setUpdateSuccess(false), 3500);
+      window.setTimeout(() => setUpdateSuccess(false), 3500);
     }, 800);
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-      {/* Header */}
       <div>
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-xs font-mono text-cyan-300 mb-2">
           <Truck className="w-4 h-4 text-cyan-400" />
@@ -82,9 +92,7 @@ export default function LogisticsPortalPage() {
         </p>
       </div>
 
-      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Col: Update Form */}
         <div className="lg:col-span-5 glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
           <div className="flex items-center gap-2 pb-4 border-b border-white/10">
             <Package className="w-5 h-5 text-cyan-400" />
@@ -92,13 +100,15 @@ export default function LogisticsPortalPage() {
           </div>
 
           <form onSubmit={handleUpdateMilestone} className="space-y-4 text-xs">
-            {/* Select product */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Select Active Shipment</label>
+              <label htmlFor="shipment" className="block text-slate-300 font-medium mb-1">
+                Select Active Shipment
+              </label>
               <select
+                id="shipment"
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
                 {Object.values(products).map((p) => (
                   <option key={p.id} value={p.id}>
@@ -108,18 +118,14 @@ export default function LogisticsPortalPage() {
               </select>
             </div>
 
-            {/* Current Status Pill */}
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
               <span className="text-slate-400">Current Status:</span>
-              <span className="font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
-                {currentProduct.status}
-              </span>
+              <Badge tone="indigo">{currentProduct.status}</Badge>
             </div>
 
-            {/* Target Status Selection */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">New Milestone Status</label>
-              <div className="grid grid-cols-3 gap-2">
+              <span className="block text-slate-300 font-medium mb-1">New Milestone Status</span>
+              <div className="grid grid-cols-3 gap-2" role="group" aria-label="Milestone status">
                 {(['CREATED', 'IN_TRANSIT', 'DELIVERED'] as const).map((st) => (
                   <button
                     key={st}
@@ -137,63 +143,81 @@ export default function LogisticsPortalPage() {
               </div>
             </div>
 
-            {/* Location */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Checkpoint Location</label>
+              <label htmlFor="location" className="block text-slate-300 font-medium mb-1">
+                Checkpoint Location
+              </label>
               <div className="relative">
                 <input
+                  id="location"
                   type="text"
                   required
                   value={checkpointLocation}
                   onChange={(e) => setCheckpointLocation(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus:border-cyan-500"
+                  className="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                 />
                 <MapPin className="w-4 h-4 text-slate-500 absolute left-3 top-3 pointer-events-none" />
               </div>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {LOCATION_PRESETS.map((loc) => (
+                  <button
+                    key={loc}
+                    type="button"
+                    onClick={() => setCheckpointLocation(loc)}
+                    className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[10px] text-slate-400 hover:text-cyan-300 hover:border-cyan-500/40"
+                  >
+                    {loc.split(',')[0]}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Operator Signature */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Logistics Operator ID</label>
+              <label htmlFor="operator" className="block text-slate-300 font-medium mb-1">
+                Logistics Operator ID
+              </label>
               <input
+                id="operator"
                 type="text"
                 required
                 value={operatorId}
                 onChange={(e) => setOperatorId(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus:border-cyan-500 font-mono"
+                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 font-mono"
               />
             </div>
 
-            {/* Inspector Notes */}
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Checkpoint Audit Notes</label>
+              <label htmlFor="notes" className="block text-slate-300 font-medium mb-1">
+                Checkpoint Audit Notes
+              </label>
               <textarea
+                id="notes"
                 rows={3}
                 value={checkpointNote}
                 onChange={(e) => setCheckpointNote(e.target.value)}
-                className="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus:border-cyan-500 leading-relaxed"
+                className="w-full p-3 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 leading-relaxed"
               />
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isUpdating}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-cyan-600/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-            >
+            {formError && (
+              <p className="text-rose-400" role="alert">
+                {formError}
+              </p>
+            )}
+
+            <Button type="submit" className="w-full" disabled={isUpdating}>
               {isUpdating ? 'Recording Milestone...' : 'Commit Milestone Transition'}
-            </button>
+            </Button>
 
             {updateSuccess && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-2 text-xs animate-in fade-in">
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-2 text-xs">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>Milestone transitioned to {targetStatus} successfully!</span>
+                <span>Milestone transitioned to {targetStatus} successfully.</span>
               </div>
             )}
           </form>
         </div>
 
-        {/* Right Col: Live Timeline Preview */}
         <div className="lg:col-span-7 glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-white/10">
             <div>
@@ -202,13 +226,13 @@ export default function LogisticsPortalPage() {
               </h3>
               <p className="text-xs text-cyan-400 font-mono">{currentProduct.id}</p>
             </div>
-            <a
+            <Link
               href={`/verify/${currentProduct.id}`}
               className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1"
             >
               <span>Public View</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </Link>
           </div>
 
           <ShipmentTimeline milestones={currentProduct.milestones} currentStatus={currentProduct.status} />

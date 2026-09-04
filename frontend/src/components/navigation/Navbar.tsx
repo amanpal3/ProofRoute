@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { checkBackendHealth } from '@/lib/api';
 import Web3WalletModal from '@/components/issuer/Web3WalletModal';
+import { useWallet } from '@/components/providers/WalletProvider';
 
 const NAV_ITEMS = [
   { label: 'Public Verifier', href: '/verify', icon: ShieldCheck },
@@ -26,8 +27,7 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  const [connectedAccount, setConnectedAccount] = useState<string | null>(null);
+  const { account, isModalOpen, openModal, closeModal, connect, disconnect } = useWallet();
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -117,12 +117,12 @@ export default function Navbar() {
 
             {/* Wallet Button */}
             <button
-              onClick={() => setIsWalletModalOpen(true)}
+              onClick={openModal}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white shadow-lg shadow-indigo-500/20 border border-indigo-400/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Wallet className="w-4 h-4 text-indigo-200" />
-              {connectedAccount ? (
-                <span>{`${connectedAccount.slice(0, 6)}...${connectedAccount.slice(-4)}`}</span>
+              {account ? (
+                <span>{`${account.slice(0, 6)}...${account.slice(-4)}`}</span>
               ) : (
                 <span>Connect Wallet</span>
               )}
@@ -167,12 +167,12 @@ export default function Navbar() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setIsWalletModalOpen(true);
+                  openModal();
                 }}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-indigo-600 text-white font-medium shadow-md"
               >
                 <Wallet className="w-5 h-5" />
-                {connectedAccount ? `${connectedAccount.slice(0, 6)}...` : 'Connect Web3 Wallet'}
+                {account ? `${account.slice(0, 6)}...` : 'Connect Web3 Wallet'}
               </button>
             </div>
           </div>
@@ -181,11 +181,11 @@ export default function Navbar() {
 
       {/* Wallet Connection Modal */}
       <Web3WalletModal
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)}
-        connectedAccount={connectedAccount}
-        onConnect={(acc) => setConnectedAccount(acc)}
-        onDisconnect={() => setConnectedAccount(null)}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        connectedAccount={account}
+        onConnect={connect}
+        onDisconnect={disconnect}
       />
     </>
   );

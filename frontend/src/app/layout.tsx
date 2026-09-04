@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/navigation/Footer';
+import AppProviders from '@/components/providers/AppProviders';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -34,20 +35,16 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} ${jetbrains.variable} dark`}>
       <body className="font-sans antialiased bg-proof-dark text-slate-100 min-h-screen flex flex-col relative selection:bg-indigo-500/30 selection:text-indigo-200">
-        {/* Background ambient lighting effects */}
         <div className="fixed inset-0 bg-grid-pattern opacity-40 pointer-events-none z-0" />
         <div className="ambient-glow top-0 left-1/4 w-[500px] h-[350px] bg-indigo-600/15" />
         <div className="ambient-glow top-1/3 right-10 w-[450px] h-[350px] bg-cyan-600/10" />
         <div className="ambient-glow bottom-10 left-10 w-[550px] h-[350px] bg-emerald-600/10" />
 
-        {/* Global Navigation */}
-        <Navbar />
-
-        {/* Main Content Area */}
-        <main className="flex-1 relative z-10">{children}</main>
-
-        {/* Global Footer */}
-        <Footer />
+        <AppProviders>
+          <Navbar />
+          <main className="flex-1 relative z-10">{children}</main>
+          <Footer />
+        </AppProviders>
       </body>
     </html>
   );

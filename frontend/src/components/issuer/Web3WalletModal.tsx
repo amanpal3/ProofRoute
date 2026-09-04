@@ -60,6 +60,7 @@ export default function Web3WalletModal({
       const mockIssuer = '0x1234567890123456789012345678901234567890';
       onConnect(mockIssuer);
       setIsConnecting(false);
+      onClose();
     }, 600);
   };
 

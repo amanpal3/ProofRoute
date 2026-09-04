@@ -1,7 +1,10 @@
 import { VerificationResult, ProductItem } from './types';
 import { SAMPLE_PRODUCTS } from './mockData';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://localhost:8000/api/v1';
 
 export async function checkBackendHealth(): Promise<{ status: string; online: boolean }> {
   try {
