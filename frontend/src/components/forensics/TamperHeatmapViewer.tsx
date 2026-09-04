@@ -9,7 +9,6 @@ import {
   FileSearch,
   Eye,
   Layers,
-  Sparkles,
   Info,
 } from 'lucide-react';
 import { RiskAssessment } from '@/lib/types';
@@ -26,7 +25,6 @@ export default function TamperHeatmapViewer({
   const [viewMode, setViewMode] = useState<'original' | 'ela_heatmap' | 'split'>('split');
   const [overlayOpacity, setOverlayOpacity] = useState(75);
 
-  const isHighRisk = assessment.riskLevel === 'HIGH';
   const isMediumRisk = assessment.riskLevel === 'MEDIUM';
   const isLowRisk = assessment.riskLevel === 'LOW';
 
@@ -83,6 +81,54 @@ export default function TamperHeatmapViewer({
           </div>
         </div>
 
+        {/* Forensics Algorithm Breakdown: ELA, CMFD, OCR */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-white/5">
+          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/5 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-mono uppercase text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                ELA Score
+              </span>
+              <span className={assessment.elaScore && assessment.elaScore > 0.5 ? 'text-rose-400' : 'text-emerald-400'}>
+                {((assessment.elaScore ?? 0) * 100).toFixed(0)}%
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Error Level Analysis compression delta across document surface pixels.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/5 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-mono uppercase text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <FileSearch className="w-3.5 h-3.5 text-indigo-400" />
+                CMFD Score
+              </span>
+              <span className={assessment.cmfdScore && assessment.cmfdScore > 0.5 ? 'text-rose-400' : 'text-emerald-400'}>
+                {((assessment.cmfdScore ?? 0) * 100).toFixed(0)}%
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Copy-Move Forgery Detection for duplicated seals, stamps, and logos.
+            </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-white/5 space-y-1.5">
+            <div className="flex items-center justify-between text-[11px] font-mono uppercase text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-amber-400" />
+                OCR Font Match
+              </span>
+              <span className={assessment.fontAnomalyDetected ? 'text-rose-400' : 'text-emerald-400'}>
+                {assessment.fontAnomalyDetected ? 'MISMATCH' : 'CONSISTENT'}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              TrOCR font consistency check across numeric fields and signatory blocks.
+            </p>
+          </div>
+        </div>
+
         {/* Explainability Breakdown Reasons */}
         <div className="space-y-2 pt-4 border-t border-white/5">
           <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300">
@@ -108,16 +154,17 @@ export default function TamperHeatmapViewer({
 
       {/* Interactive ELA Tampering Visualizer */}
       <div className="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <ScanEye className="w-5 h-5 text-indigo-400" />
-            <h4 className="text-sm font-semibold text-white">
-              Error Level Analysis (ELA) Heatmap Inspector
-            </h4>
-          </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <ScanEye className="w-5 h-5 text-indigo-400" />
+              <h4 className="text-sm font-semibold text-white">
+                Error Level Analysis (ELA) Heatmap Inspector
+              </h4>
+            </div>
 
-          {/* View Mode Switcher */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+            {/* View Mode Switcher */}
+            <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
             <button
               onClick={() => setViewMode('original')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
@@ -142,7 +189,26 @@ export default function TamperHeatmapViewer({
             >
               Heatmap Only
             </button>
+            </div>
           </div>
+
+          {/* ELA Overlay Opacity Slider */}
+          {(viewMode === 'split' || viewMode === 'ela_heatmap') && (
+            <div className="flex items-center gap-3 text-xs text-slate-400 px-1">
+              <Sliders className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span className="font-mono whitespace-nowrap">Heatmap Opacity</span>
+              <input
+                type="range"
+                min={20}
+                max={100}
+                value={overlayOpacity}
+                onChange={(e) => setOverlayOpacity(Number(e.target.value))}
+                className="flex-1 max-w-xs accent-indigo-500"
+                aria-label="ELA heatmap overlay opacity"
+              />
+              <span className="font-mono text-cyan-400 w-8">{overlayOpacity}%</span>
+            </div>
+          )}
         </div>
 
         {/* ELA Canvas Viewport */}
@@ -192,7 +258,10 @@ export default function TamperHeatmapViewer({
 
           {/* ELA Heatmap View */}
           {(viewMode === 'ela_heatmap' || viewMode === 'split') && (
-            <div className="relative rounded-2xl bg-black border border-slate-800 p-5 font-mono text-xs overflow-hidden">
+            <div
+              className="relative rounded-2xl bg-black border border-slate-800 p-5 font-mono text-xs overflow-hidden transition-opacity"
+              style={{ opacity: viewMode === 'ela_heatmap' ? overlayOpacity / 100 : 1 }}
+            >
               <div className="flex items-center justify-between border-b border-slate-800 pb-2 text-[11px] text-slate-400">
                 <span className="flex items-center gap-1.5 text-cyan-400">
                   <Layers className="w-3.5 h-3.5" />

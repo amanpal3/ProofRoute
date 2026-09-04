@@ -14,12 +14,10 @@ interface DocumentDropzoneProps {
     timeMs: number;
     presetProductId?: string;
   }) => void;
-  isProcessing?: boolean;
 }
 
 export default function DocumentDropzone({
   onFileProcessed,
-  isProcessing = false,
 }: DocumentDropzoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [currentFile, setCurrentFile] = useState<{
@@ -69,10 +67,6 @@ export default function DocumentDropzone({
   // Preset quick-testers for instant demo without uploading local files
   const loadPresetValid = () => {
     const valid = SAMPLE_PRODUCTS['PR-8829-X'];
-    const fakeFile = new File(['Authentic pharmaceutical batch certificate content 2026'], valid.documentName, {
-      type: 'application/pdf',
-    });
-    // Use the exact anchored hash for the authentic preset
     setCurrentFile({
       name: valid.documentName,
       size: valid.fileSizeBytes,

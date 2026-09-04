@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { ScanEye, AlertTriangle, CheckCircle2, Sliders, Shield, Sparkles } from 'lucide-react';
+import { ScanEye, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
 import TamperHeatmapViewer from '@/components/forensics/TamperHeatmapViewer';
 import { SAMPLE_PRODUCTS } from '@/lib/mockData';
 

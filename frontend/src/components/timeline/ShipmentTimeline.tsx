@@ -5,9 +5,6 @@ import {
   Clock,
   MapPin,
   Truck,
-  Building2,
-  PackageCheck,
-  ExternalLink,
   ShieldCheck,
 } from 'lucide-react';
 import { ShipmentMilestone } from '@/lib/types';
@@ -42,7 +39,7 @@ export default function ShipmentTimeline({ milestones, currentStatus }: Shipment
       </div>
 
       <div className="relative pl-6 space-y-8 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-cyan-500 before:to-slate-800">
-        {milestones.map((step, idx) => (
+        {milestones.map((step) => (
           <div key={step.id} className="relative group">
             {/* Step Icon Node */}
             <div

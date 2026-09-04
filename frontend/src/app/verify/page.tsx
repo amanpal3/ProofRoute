@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Search, FileCheck2, ArrowLeft, RefreshCw, Sparkles, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
+import { ShieldCheck, Search, AlertCircle } from 'lucide-react';
 import DocumentDropzone from '@/components/verification/DocumentDropzone';
 import VerificationResultCard from '@/components/verification/VerificationResultCard';
 import { VerificationResult } from '@/lib/types';
-import { SAMPLE_PRODUCTS } from '@/lib/mockData';
+import { verifyHashAgainstRegistry } from '@/lib/verification';
+import { fetchProductById } from '@/lib/api';
 
 export default function PublicVerifyPage() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
@@ -22,37 +22,16 @@ export default function PublicVerifyPage() {
     presetProductId?: string;
   }) => {
     setSearchError('');
-    const matchedProduct = data.presetProductId
-      ? SAMPLE_PRODUCTS[data.presetProductId]
-      : Object.values(SAMPLE_PRODUCTS).find((p) => p.documentHash.toLowerCase() === data.hash.toLowerCase());
-
-    if (matchedProduct) {
-      const isAuthentic = matchedProduct.documentHash.toLowerCase() === data.hash.toLowerCase();
-      setVerificationResult({
-        status: isAuthentic ? 'VALID' : 'TAMPERED',
-        computedHash: data.hash,
-        expectedHash: matchedProduct.documentHash,
-        matchedProduct,
-        verificationTimestamp: Date.now(),
-        executionTimeMs: data.timeMs,
-      });
-    } else {
-      setVerificationResult({
-        status: 'NOT_REGISTERED',
-        computedHash: data.hash,
-        expectedHash: undefined,
-        verificationTimestamp: Date.now(),
-        executionTimeMs: data.timeMs,
-      });
-    }
+    const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+    setVerificationResult({ ...result, executionTimeMs: data.timeMs });
   };
 
-  const handleSearchById = (e: React.FormEvent) => {
+  const handleSearchById = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanId = manualSearchId.trim().toUpperCase();
     if (!cleanId) return;
 
-    const matchedProduct = SAMPLE_PRODUCTS[cleanId];
+    const matchedProduct = await fetchProductById(cleanId);
     if (matchedProduct) {
       setSearchError('');
       setVerificationResult({

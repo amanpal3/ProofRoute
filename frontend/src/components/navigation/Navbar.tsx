@@ -1,20 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   ShieldCheck,
-  FileSearch,
   Building2,
   Truck,
   ScanEye,
   Wallet,
   Menu,
   X,
-  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { checkBackendHealth } from '@/lib/api';
 import Web3WalletModal from '@/components/issuer/Web3WalletModal';
 
 const NAV_ITEMS = [
@@ -29,6 +28,11 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [connectedAccount, setConnectedAccount] = useState<string | null>(null);
+  const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    checkBackendHealth().then(({ online }) => setBackendOnline(online));
+  }, []);
 
   return (
     <>
@@ -81,6 +85,29 @@ export default function Navbar() {
 
           {/* Right Action: Network Badge & Web3 Wallet */}
           <div className="hidden lg:flex items-center gap-3">
+            {/* API Backend Status */}
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-mono ${
+                backendOnline === true
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                  : backendOnline === false
+                  ? 'bg-slate-900/80 border-slate-700/60 text-slate-400'
+                  : 'bg-slate-900/80 border-slate-700/60 text-slate-500'
+              }`}
+              title={backendOnline ? 'FastAPI backend connected' : 'Using local mock fallback'}
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  backendOnline === true
+                    ? 'bg-emerald-400 animate-pulse'
+                    : backendOnline === false
+                    ? 'bg-amber-400'
+                    : 'bg-slate-600'
+                }`}
+              />
+              <span>{backendOnline === true ? 'API Live' : backendOnline === false ? 'Mock Demo' : 'Checking…'}</span>
+            </div>
+
             {/* Live Network Pill */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/60 text-xs font-mono text-slate-300">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />

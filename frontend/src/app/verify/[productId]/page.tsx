@@ -1,23 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams, notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import {
   ShieldCheck,
   AlertTriangle,
   ArrowLeft,
   QrCode,
   Truck,
-  ExternalLink,
   Cpu,
-  PackageCheck,
   Building2,
   Calendar,
   Globe2,
-  Fingerprint,
+  Loader2,
 } from 'lucide-react';
-import { SAMPLE_PRODUCTS } from '@/lib/mockData';
+import { fetchProductById } from '@/lib/api';
+import { ProductItem } from '@/lib/types';
 import VerificationResultCard from '@/components/verification/VerificationResultCard';
 import ShipmentTimeline from '@/components/timeline/ShipmentTimeline';
 import TamperHeatmapViewer from '@/components/forensics/TamperHeatmapViewer';
@@ -26,9 +25,31 @@ import QrCodeModal from '@/components/verification/QrCodeModal';
 export default function ProductVerificationPage() {
   const params = useParams();
   const productId = typeof params?.productId === 'string' ? params.productId.toUpperCase() : '';
-  const product = SAMPLE_PRODUCTS[productId];
+  const [product, setProduct] = useState<ProductItem | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isQrOpen, setIsQrOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'provenance' | 'forensics'>('provenance');
+
+  useEffect(() => {
+    if (!productId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    fetchProductById(productId).then((p) => {
+      setProduct(p);
+      setLoading(false);
+    });
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-4">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
+        <p className="text-sm text-slate-400 font-mono">Loading on-chain provenance record…</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

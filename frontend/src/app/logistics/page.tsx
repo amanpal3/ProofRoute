@@ -4,10 +4,7 @@ import React, { useState } from 'react';
 import {
   Truck,
   MapPin,
-  Clock,
-  ShieldCheck,
   CheckCircle2,
-  AlertCircle,
   ArrowRight,
   Package,
 } from 'lucide-react';

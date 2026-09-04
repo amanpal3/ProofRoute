@@ -8,12 +8,9 @@ import {
   HelpCircle,
   Copy,
   Check,
-  ExternalLink,
   QrCode,
   ArrowRight,
   Fingerprint,
-  FileCheck2,
-  Clock,
   Blocks,
   Cpu,
 } from 'lucide-react';

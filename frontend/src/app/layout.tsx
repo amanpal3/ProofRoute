@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   description:
     'Verify where a product came from, what happened during shipment, and whether its documents were altered with on-chain cryptographic proofs and explainable AI forensics.',
   keywords: ['provenance', 'blockchain', 'document integrity', 'risk analysis', 'supply chain', 'Web3'],
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

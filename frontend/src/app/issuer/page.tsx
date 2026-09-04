@@ -7,13 +7,8 @@ import {
   PlusCircle,
   FileCheck,
   CheckCircle2,
-  Clock,
-  ArrowRight,
-  Shield,
   Loader2,
   Hash,
-  Copy,
-  Check,
   QrCode,
   ExternalLink,
 } from 'lucide-react';
@@ -47,7 +42,6 @@ export default function IssuerPortalPage() {
 
   // Transaction State Machine
   const [txStep, setTxStep] = useState<TxStep>('idle');
-  const [registeredTxHash, setRegisteredTxHash] = useState('');
   const [newlyCreatedId, setNewlyCreatedId] = useState('');
   const [activeQrId, setActiveQrId] = useState<string | null>(null);
 
@@ -79,7 +73,6 @@ export default function IssuerPortalPage() {
     setTimeout(() => {
       // Step 2: Transaction Submitted to EVM Node
       const mockTx = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      setRegisteredTxHash(mockTx);
       setTxStep('submitted');
 
       // Step 3: Block Confirming

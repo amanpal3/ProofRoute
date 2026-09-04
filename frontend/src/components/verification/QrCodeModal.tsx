@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import { X, QrCode, Download, Copy, Check, ExternalLink, Smartphone } from 'lucide-react';
+import { X, QrCode, Download, Copy, Check, Smartphone } from 'lucide-react';
 
 interface QrCodeModalProps {
   isOpen: boolean;

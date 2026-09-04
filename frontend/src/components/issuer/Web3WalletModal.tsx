@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Wallet, CheckCircle2, Shield, ArrowUpRight, Copy, Check } from 'lucide-react';
+import { X, Wallet, Shield, ArrowUpRight, Copy, Check } from 'lucide-react';
 import { truncateHash } from '@/lib/crypto';
 
 interface Web3WalletModalProps {
@@ -53,7 +53,7 @@ export default function Web3WalletModal({
 
   if (!isOpen) return null;
 
-  const handleConnectWallet = (walletId: string) => {
+  const handleConnectWallet = () => {
     setIsConnecting(true);
     setTimeout(() => {
       // Deterministic demo issuer account
@@ -157,7 +157,7 @@ export default function Web3WalletModal({
             {WALLET_OPTIONS.map((wallet) => (
               <button
                 key={wallet.id}
-                onClick={() => handleConnectWallet(wallet.id)}
+                onClick={() => handleConnectWallet()}
                 disabled={isConnecting}
                 className="w-full flex items-center justify-between p-3.5 rounded-xl bg-slate-950/60 hover:bg-indigo-600/10 border border-slate-800 hover:border-indigo-500/40 text-left transition-all duration-150 group"
               >

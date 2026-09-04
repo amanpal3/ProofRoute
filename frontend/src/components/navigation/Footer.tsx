@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Lock, Cpu, Database, Github, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Lock, Cpu, Database } from 'lucide-react';
 
 export default function Footer() {
   return (

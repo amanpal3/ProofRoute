@@ -5,23 +5,17 @@ import Link from 'next/link';
 import {
   ShieldCheck,
   Cpu,
-  Truck,
   Building2,
   Lock,
   ArrowRight,
   QrCode,
-  Layers,
   Sparkles,
   Zap,
-  CheckCircle2,
-  FileText,
-  AlertTriangle,
-  Fingerprint,
 } from 'lucide-react';
 import DocumentDropzone from '@/components/verification/DocumentDropzone';
 import VerificationResultCard from '@/components/verification/VerificationResultCard';
 import { VerificationResult } from '@/lib/types';
-import { SAMPLE_PRODUCTS } from '@/lib/mockData';
+import { verifyHashAgainstRegistry } from '@/lib/verification';
 
 export default function HomePage() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
@@ -34,31 +28,8 @@ export default function HomePage() {
     timeMs: number;
     presetProductId?: string;
   }) => {
-    // Check against registered sample products
-    const matchedProduct = data.presetProductId
-      ? SAMPLE_PRODUCTS[data.presetProductId]
-      : Object.values(SAMPLE_PRODUCTS).find((p) => p.documentHash.toLowerCase() === data.hash.toLowerCase());
-
-    if (matchedProduct) {
-      const isAuthentic = matchedProduct.documentHash.toLowerCase() === data.hash.toLowerCase();
-      setVerificationResult({
-        status: isAuthentic ? 'VALID' : 'TAMPERED',
-        computedHash: data.hash,
-        expectedHash: matchedProduct.documentHash,
-        matchedProduct,
-        verificationTimestamp: Date.now(),
-        executionTimeMs: data.timeMs,
-      });
-    } else {
-      // Unregistered document hash
-      setVerificationResult({
-        status: 'NOT_REGISTERED',
-        computedHash: data.hash,
-        expectedHash: undefined,
-        verificationTimestamp: Date.now(),
-        executionTimeMs: data.timeMs,
-      });
-    }
+    const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+    setVerificationResult({ ...result, executionTimeMs: data.timeMs });
   };
 
   return (
