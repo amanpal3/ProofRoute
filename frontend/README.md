@@ -1,54 +1,47 @@
-# ProofRoute Frontend
+# 🖥️ ProofRoute Frontend Portal
 
-Production-ready Next.js 14 demo portal for decentralized product provenance, cryptographic document integrity, and AI risk analysis.
+Modern Web3-native document verification portal, issuer dashboard, and provenance explorer built with Next.js 15, Tailwind CSS, and Wagmi.
 
-## Feature Modules
+---
 
-| Route | Description |
-|---|---|
-| `/` | Landing page with hero, live stats, and interactive verification sandbox |
-| `/verify` | Wallet-free public document verifier (drag & drop + SHA-256) |
-| `/verify/[productId]` | QR verification and milestone provenance explorer |
-| `/issuer` | Manufacturer batch registration and on-chain anchoring simulator |
-| `/logistics` | Logistics operator milestone updater |
-| `/forensics` | AI tampering inspector with ELA heatmap and CMFD/OCR breakdown |
+## 🏗️ Feature Modules
 
-## Tech Stack
+1. **Public Verifier**:
+   - Drag-and-drop document uploader with in-browser SHA-256 hash computation (client-side privacy).
+   - Visual certificate badge, on-chain proof explorer, and AI tampering heatmap.
+2. **Issuer Dashboard**:
+   - Web3 wallet connection (MetaMask, Coinbase Wallet, Rainbow, WalletConnect).
+   - Batch document anchoring and cryptographic signature signing.
+3. **Admin & Analytics**:
+   - Network verification volume, risk distribution charts, and audit logs.
 
-- **Framework**: Next.js 14 (App Router), React 18, TypeScript
-- **Styling**: Tailwind CSS, Lucide Icons
-- **Crypto**: Native WebCrypto API (`crypto.subtle.digest`)
-- **QR**: `qrcode` library for downloadable verification codes
-- **Data**: Built-in mock registry with optional FastAPI backend fallback
+---
 
-## Quick Start
+## 🛠️ Tech Stack
+- **Framework**: Next.js 15 (App Router, React 19)
+- **Styling**: Tailwind CSS + shadcn/ui + Lucide Icons
+- **Web3 / Blockchain UX**: Wagmi 2.x, Viem, RainbowKit
+- **State Management**: TanStack Query (React Query) + Zustand
 
+---
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
 ```bash
-cd frontend
 npm install
+# or
+pnpm install
+```
+
+### 2. Start Development Server
+```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Open [http://localhost:3000](http://localhost:3000).
-
-### Connect to Live Backend
-
-Set the API URL to enable live backend mode (falls back to mock data when offline):
-
+### 3. Build for Production
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 npm run dev
+npm run build
+npm run start
 ```
-
-## Verification
-
-```bash
-npm run build    # Production build + TypeScript check
-npm run lint     # ESLint
-```
-
-## Demo Presets
-
-- **PR-8829-X** — Authentic pharmaceutical certificate (VALID)
-- **PR-4410-T** — Tampered aerospace MTR (TAMPERED / HIGH risk)
-
-Use the preset buttons on any document dropzone, or visit `/verify/PR-8829-X` directly.
