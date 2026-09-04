@@ -8,6 +8,7 @@ import { ProductItem, ShipmentMilestoneStatus } from '@/lib/types';
 import ShipmentTimeline from '@/components/timeline/ShipmentTimeline';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
+import { fetchProducts, updateProductMilestone } from '@/lib/api';
 
 const LOCATION_PRESETS = [
   'Rotterdam Hub, Netherlands',
@@ -28,6 +29,18 @@ export default function LogisticsPortalPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [formError, setFormError] = useState('');
+
+  React.useEffect(() => {
+    fetchProducts().then((items) => {
+      if (items && items.length > 0) {
+        const mapped: Record<string, ProductItem> = {};
+        items.forEach((p) => {
+          mapped[p.id] = p;
+        });
+        setProducts(mapped);
+      }
+    });
+  }, []);
 
   const currentProduct = products[selectedProductId];
 
@@ -69,6 +82,14 @@ export default function LogisticsPortalPage() {
       setProducts({
         ...products,
         [selectedProductId]: updatedProduct,
+      });
+
+      // Asynchronously record milestone transition on backend
+      updateProductMilestone(selectedProductId, {
+        status: targetStatus,
+        actorAddress: currentProduct.manufacturer || '0x1234567890123456789012345678901234567890',
+        location: checkpointLocation,
+        notes: checkpointNote,
       });
 
       setIsUpdating(false);

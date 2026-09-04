@@ -10,11 +10,20 @@ import { truncateHash } from '@/lib/crypto';
 import { SAMPLE_PRODUCTS } from '@/lib/mockData';
 import { ProductItem } from '@/lib/types';
 import { useWallet } from '@/components/providers/WalletProvider';
+import { fetchProducts } from '@/lib/api';
 
 export default function IssuerPortalPage() {
   const { account, openModal } = useWallet();
   const [activeQrId, setActiveQrId] = useState<string | null>(null);
   const [batches, setBatches] = useState<ProductItem[]>(Object.values(SAMPLE_PRODUCTS));
+
+  React.useEffect(() => {
+    fetchProducts().then((items) => {
+      if (items && items.length > 0) {
+        setBatches(items);
+      }
+    });
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
