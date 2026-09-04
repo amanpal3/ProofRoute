@@ -28,7 +28,7 @@ ml/
 │   └── pipeline.py              # Unified inference pipeline entrypoint
 ├── models/                      # Model weights and checkpoint configs
 ├── data/                        # Datasets (raw, processed, benchmarks)
-└── requirements.txt             # PyTorch, OpenCV, Transformers dependencies
+└── requirements.txt             # Core runtime dependencies
 ```
 
 ---
@@ -36,11 +36,36 @@ ml/
 ## 🚀 Quick Start
 
 ### 1. Install Dependencies
+
+From the repository root:
+
 ```bash
-pip install -r requirements.txt
+pip install -r ml/requirements.txt
 ```
 
 ### 2. Run Inference on a Sample Document
+
 ```bash
-python src/pipeline.py --input-image ./data/sample.png
+PYTHONPATH=ml python ml/src/pipeline.py --input-image ./data/sample.png
 ```
+
+## Implemented baseline
+
+The initial implementation is dependency-light and lives under `src/`. It provides:
+
+- `forensics.image.error_level_analysis`: JPEG recompression inconsistency metrics.
+- `forensics.image.copy_move_detection`: repeated-block copy-move screening heuristic.
+- `ocr.extractor.extract_text`: optional Tesseract extraction with graceful `unavailable` fallback.
+- `risk.scorer.assess_risk`: explainable weighted score from `0–100`, with `LOW`, `MEDIUM`, and `HIGH` levels.
+- `pipeline.analyze_document`: unified JSON-safe result for backend integration.
+
+The ML result is **decision support only** and does not determine blockchain authenticity. The pipeline can run without Tesseract; OCR fields then report an unavailable engine while image forensics and risk scoring continue.
+
+### Development commands
+
+```bash
+PYTHONPATH=ml pytest -q ml/tests
+PYTHONPATH=ml python3 -m compileall -q ml/src ml/tests
+```
+
+The risk response includes `risk_level`, `risk_score`, `reasons`, `model_version`, `assessment_timestamp`, and the required disclaimer from the backend integration contract.
