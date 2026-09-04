@@ -9,6 +9,12 @@ import Button from '@/components/ui/Button';
 import { ProductItem } from '@/lib/types';
 import { TxStep } from '@/lib/tx';
 import { createProductBatch } from '@/lib/api';
+import type { Address } from 'viem';
+import {
+  registerProductOnChain,
+  attachDocumentHashOnChain,
+  getContractAddress,
+} from '@/lib/web3';
 
 interface BatchRegisterFormProps {
   walletAccount: string | null;
@@ -67,7 +73,7 @@ export default function BatchRegisterForm({
     setTxStep('cancelled');
   };
 
-  const handleRegisterBatch = (e: React.FormEvent) => {
+  const handleRegisterBatch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!walletAccount) {
       onNeedWallet();
@@ -87,85 +93,105 @@ export default function BatchRegisterForm({
     setTxHash('');
     setTxStep('wallet_confirmation');
 
-    const t1 = window.setTimeout(() => {
-      const mockTx =
-        '0x' +
-        Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      setTxHash(mockTx);
+    try {
+      const suffix = (productName.trim()[0] || 'X').toUpperCase();
+      const generatedId = `PR-${Math.floor(1000 + Math.random() * 9000)}-${suffix}`;
+      const cleanBatch = batchCode || `BATCH-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+
+      // 1. Submit on-chain product registration
+      const tx = await registerProductOnChain({
+        productId: generatedId,
+        name: productName || 'Certified Industrial Cargo Batch',
+        batchId: cleanBatch,
+        origin: originCountry,
+        destination: destinationCountry,
+        account: walletAccount as Address,
+      });
+
+      setTxHash(tx);
       setTxStep('submitted');
 
-      const t2 = window.setTimeout(() => {
-        setTxStep('confirming');
-        const t3 = window.setTimeout(() => {
-          const suffix = (productName.trim()[0] || 'X').toUpperCase();
-          const generatedId = `PR-${Math.floor(1000 + Math.random() * 9000)}-${suffix}`;
-          setNewlyCreatedId(generatedId);
-          setTxStep('confirmed');
+      // 2. Anchor document hash on-chain
+      let docHashHex = attachedDoc.hash as `0x${string}`;
+      if (!docHashHex.startsWith('0x')) {
+        docHashHex = `0x${docHashHex}`;
+      }
 
-          const newEntry: ProductItem = {
-            id: generatedId,
-            batchNumber: batchCode || `BATCH-2026-${Math.floor(10000 + Math.random() * 90000)}`,
-            name: productName || 'Certified Industrial Cargo Batch',
-            category,
-            manufacturer: 'Authorized Verified Manufacturer',
-            originCountry,
-            destinationCountry,
-            manufactureDate,
-            documentHash: attachedDoc.hash,
-            documentName: attachedDoc.name,
-            documentMime: 'application/pdf',
-            fileSizeBytes: attachedDoc.size,
+      setTxStep('confirming');
+      await attachDocumentHashOnChain({
+        productId: generatedId,
+        documentHash: docHashHex,
+        account: walletAccount as Address,
+      });
+
+      setNewlyCreatedId(generatedId);
+      setTxStep('confirmed');
+
+      const newEntry: ProductItem = {
+        id: generatedId,
+        batchNumber: cleanBatch,
+        name: productName || 'Certified Industrial Cargo Batch',
+        category,
+        manufacturer: 'Authorized Verified Manufacturer',
+        originCountry,
+        destinationCountry,
+        manufactureDate,
+        documentHash: attachedDoc.hash,
+        documentName: attachedDoc.name,
+        documentMime: 'application/pdf',
+        fileSizeBytes: attachedDoc.size,
+        status: 'CREATED',
+        onChainRecord: {
+          txHash: tx,
+          blockNumber: 1,
+          contractAddress: getContractAddress(),
+          issuerAddress: walletAccount,
+          timestamp: Math.floor(Date.now() / 1000),
+          network: 'Local Anvil (ID: 31337)',
+          status: 'CONFIRMED',
+        },
+        riskAssessment: {
+          riskScore: 4.8,
+          riskLevel: 'LOW',
+          tamperingDetected: false,
+          confidence: 0.99,
+          reasons: ['Newly registered proof anchored directly on-chain'],
+        },
+        milestones: [
+          {
+            id: 'm-new-1',
             status: 'CREATED',
-            onChainRecord: {
-              txHash: mockTx,
-              blockNumber: 19482500,
-              contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
-              issuerAddress: walletAccount,
-              timestamp: Math.floor(Date.now() / 1000),
-              network: 'Ethereum Sepolia (ID: 11155111)',
-              status: 'CONFIRMED',
-            },
-            riskAssessment: {
-              riskScore: 4.8,
-              riskLevel: 'LOW',
-              tamperingDetected: false,
-              confidence: 0.99,
-              reasons: ['Newly registered proof anchored directly on-chain'],
-            },
-            milestones: [
-              {
-                id: 'm-new-1',
-                status: 'CREATED',
-                title: 'Batch Created & Document Anchored',
-                location: `${originCountry} Logistics Hub`,
-                timestamp: 'Just now',
-                operator: walletAccount,
-                completed: true,
-                current: true,
-              },
-            ],
-          };
+            title: 'Batch Created & Document Anchored',
+            location: `${originCountry} Logistics Hub`,
+            timestamp: 'Just now',
+            operator: walletAccount,
+            completed: true,
+            current: true,
+          },
+        ],
+      };
 
-          createProductBatch({
-            id: generatedId,
-            name: productName || 'Certified Industrial Cargo Batch',
-            batchNumber: batchCode || `BATCH-2026-${Math.floor(10000 + Math.random() * 90000)}`,
-            manufacturerAddress: walletAccount,
-            originCountry,
-            destinationCountry,
-            documentHash: attachedDoc.hash,
-            txHash: mockTx,
-          }).then((persisted) => {
-            onRegistered(persisted || newEntry);
-          }).catch(() => {
-            onRegistered(newEntry);
-          });
-        }, 1200);
-        timersRef.current.push(t3);
-      }, 1000);
-      timersRef.current.push(t2);
-    }, 1000);
-    timersRef.current.push(t1);
+      try {
+        const persisted = await createProductBatch({
+          id: generatedId,
+          name: productName || 'Certified Industrial Cargo Batch',
+          batchNumber: cleanBatch,
+          manufacturerAddress: walletAccount,
+          originCountry,
+          destinationCountry,
+          documentHash: attachedDoc.hash,
+          txHash: tx,
+        });
+        onRegistered(persisted || newEntry);
+      } catch {
+        onRegistered(newEntry);
+      }
+    } catch (err: unknown) {
+      console.error('On-chain registration failed:', err);
+      const errMsg = err instanceof Error ? err.message : 'Transaction failed on blockchain';
+      setFormError(errMsg);
+      setTxStep('reverted');
+    }
   };
 
   const busy = txStep === 'wallet_confirmation' || txStep === 'submitted' || txStep === 'confirming';

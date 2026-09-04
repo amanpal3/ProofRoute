@@ -9,6 +9,13 @@ from app.core.exceptions import BlockchainUnavailableException
 PROOFROUTE_REGISTRY_ABI = [
     {
         "type": "function",
+        "name": "productExists",
+        "inputs": [{"name": "productId", "type": "string"}],
+        "outputs": [{"name": "", "type": "bool"}],
+        "stateMutability": "view",
+    },
+    {
+        "type": "function",
         "name": "verifyDocumentHash",
         "inputs": [
             {"name": "productId", "type": "string"},
@@ -70,8 +77,8 @@ class BlockchainService:
         """
         Queries the smart contract to verify if the document hash matches the anchored commitment.
         Returns:
-            bool if RPC and contract are available,
-            None if RPC is offline or contract is unconfigured (graceful fallback).
+            bool if product exists on-chain and contract is available,
+            None if RPC is offline, contract is unconfigured, or product is not yet on-chain (graceful fallback).
         """
         if not self.is_connected():
             logger.info("Blockchain RPC not connected; falling back to off-chain projection verification.")
@@ -83,6 +90,11 @@ class BlockchainService:
             return None
 
         try:
+            # Check if product is registered on-chain first
+            if not contract.functions.productExists(product_id).call():
+                logger.info(f"Product {product_id} not registered on-chain yet; falling back to database projection.")
+                return None
+
             # Convert 0x hex string to bytes32
             hex_clean = document_hash.lower()
             if hex_clean.startswith("0x"):
@@ -94,10 +106,8 @@ class BlockchainService:
             ).call()
             return is_valid
         except Exception as e:
-            logger.error(f"Error querying on-chain document hash: {str(e)}")
-            raise BlockchainUnavailableException(
-                f"Failed to query blockchain contract: {str(e)}"
-            )
+            logger.warning(f"Failed to query on-chain document hash for {product_id} ({str(e)}); falling back to projection.")
+            return None
 
 
 blockchain_service = BlockchainService()
