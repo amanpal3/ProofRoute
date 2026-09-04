@@ -47,9 +47,19 @@ alembic upgrade head
 
 ### 3. Run Development Server
 
+On Linux/macOS:
+
 ```bash
 PYTHONPATH="$PWD:$PWD/ml" uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+On Windows PowerShell, run the repository launcher from the project root:
+
+```powershell
+.\\run_backend.ps1
+```
+
+The launcher sets both backend and ML import paths and starts `app.main:app` with `--app-dir backend`, which prevents `ModuleNotFoundError: No module named 'app'`.
 
 - **Interactive API Docs (Swagger UI)**: `http://localhost:8000/docs`
 - **ReDoc UI**: `http://localhost:8000/redoc`
