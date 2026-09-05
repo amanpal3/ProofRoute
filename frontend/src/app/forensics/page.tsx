@@ -8,12 +8,12 @@ import { SAMPLE_PRODUCTS } from '@/lib/mockData';
 
 function ForensicsContent() {
   const searchParams = useSearchParams();
-  const initialId = searchParams.get('id') || 'PR-4410-T';
+  const initialId = searchParams.get('id') || 'PR-IND-2002';
   const [selectedId, setSelectedId] = useState<string>(
-    SAMPLE_PRODUCTS[initialId] ? initialId : 'PR-4410-T'
+    SAMPLE_PRODUCTS[initialId] ? initialId : 'PR-IND-2002'
   );
 
-  const currentProduct = SAMPLE_PRODUCTS[selectedId] || SAMPLE_PRODUCTS['PR-4410-T'];
+  const currentProduct = SAMPLE_PRODUCTS[selectedId] || SAMPLE_PRODUCTS['PR-IND-2002'];
 
   return (
     <div className="space-y-8">
@@ -26,27 +26,27 @@ function ForensicsContent() {
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
-            onClick={() => setSelectedId('PR-4410-T')}
+            onClick={() => setSelectedId('PR-IND-2002')}
             className={`flex-1 sm:flex-initial flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-              selectedId === 'PR-4410-T'
+              selectedId === 'PR-IND-2002'
                 ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
                 : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Altered MTR (High Risk / Tampered)</span>
+            <span>Surat Cotton Report (High Risk / Tampered)</span>
           </button>
 
           <button
-            onClick={() => setSelectedId('PR-8829-X')}
+            onClick={() => setSelectedId('PR-IND-1001')}
             className={`flex-1 sm:flex-initial flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-              selectedId === 'PR-8829-X'
+              selectedId === 'PR-IND-1001'
                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                 : 'bg-slate-900 text-slate-300 hover:bg-slate-800'
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Pharma Certificate (Authentic)</span>
+            <span>Pune MedTech Certificate (Authentic)</span>
           </button>
         </div>
       </div>

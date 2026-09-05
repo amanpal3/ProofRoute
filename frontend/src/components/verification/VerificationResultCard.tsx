@@ -27,7 +27,7 @@ export default function VerificationResultCard({ result }: VerificationResultCar
   const [copiedHash, setCopiedHash] = useState(false);
   const [isQrOpen, setIsQrOpen] = useState(false);
 
-  const { status, computedHash, expectedHash, matchedProduct } = result;
+  const { status, computedHash, expectedHash, matchedProduct, riskAssessment } = result;
   const isAuthentic = status === 'VALID';
   const isTampered = status === 'TAMPERED';
 
@@ -249,6 +249,25 @@ export default function VerificationResultCard({ result }: VerificationResultCar
                 {truncateHash(matchedProduct.onChainRecord.contractAddress, 6, 4)}
               </span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {riskAssessment && (
+        <div className="p-5 rounded-2xl bg-slate-900/50 border border-white/5 space-y-3 text-xs mb-6">
+          <div className="flex items-center justify-between">
+            <span className="font-semibold text-slate-300 flex items-center gap-1.5 font-mono">
+              <Cpu className="w-4 h-4 text-cyan-400" />
+              ML Risk Assessment
+            </span>
+            <span className="font-mono text-slate-300">
+              {riskAssessment.riskLevel} · {riskAssessment.riskScore.toFixed(1)}/100
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-white/5 text-slate-400">
+            <span>Confidence: {(riskAssessment.confidence * 100).toFixed(0)}%</span>
+            <span>ELA: {((riskAssessment.elaScore ?? 0) * 100).toFixed(0)}%</span>
+            <span>CMFD: {((riskAssessment.cmfdScore ?? 0) * 100).toFixed(0)}%</span>
           </div>
         </div>
       )}

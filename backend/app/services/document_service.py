@@ -179,6 +179,7 @@ class DocumentService:
             file_size=file_size,
             mime_type=mime_type,
             product_status=product.current_status if product else None,
+            document_content=file_content,
         )
 
         # --- Audit trail ---

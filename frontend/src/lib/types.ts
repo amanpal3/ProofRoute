@@ -63,6 +63,7 @@ export interface VerificationResult {
   computedHash: string;
   expectedHash?: string;
   matchedProduct?: ProductItem;
+  riskAssessment?: RiskAssessment;
   verificationTimestamp: number;
   executionTimeMs: number;
 }
