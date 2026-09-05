@@ -6,6 +6,22 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   'http://127.0.0.1:8000/api/v1';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapBackendRiskAssessment(raw: any, fallback: RiskAssessment): RiskAssessment {
+  if (!raw) return fallback;
+
+  return {
+    riskScore: Number(raw.risk_score ?? raw.riskScore ?? fallback.riskScore),
+    riskLevel: (raw.risk_level ?? raw.riskLevel ?? fallback.riskLevel) as RiskAssessment['riskLevel'],
+    tamperingDetected: Boolean(raw.tampering_detected ?? raw.tamperingDetected ?? fallback.tamperingDetected),
+    confidence: Number(raw.confidence ?? fallback.confidence),
+    reasons: Array.isArray(raw.reasons) ? raw.reasons : fallback.reasons,
+    elaScore: raw.ela_score ?? raw.elaScore,
+    cmfdScore: raw.cmfd_score ?? raw.cmfdScore,
+    fontAnomalyDetected: Boolean(raw.font_anomaly_detected ?? raw.fontAnomalyDetected ?? false),
+  };
+}
+
 export interface BackendHealth {
   status: string;
   online: boolean;
@@ -76,7 +92,7 @@ function mapBackendProductToFrontend(raw: any, events: any[] = []): ProductItem 
         },
       ];
 
-  const defaultRisk: RiskAssessment = existingMock?.riskAssessment || {
+  const fallbackRisk: RiskAssessment = existingMock?.riskAssessment || {
     riskScore: raw.is_anchored ? 5.0 : 45.0,
     riskLevel: raw.is_anchored ? 'LOW' : 'MEDIUM',
     tamperingDetected: false,
@@ -85,6 +101,7 @@ function mapBackendProductToFrontend(raw: any, events: any[] = []): ProductItem 
       ? ['Document SHA-256 hash anchored and verified against registry']
       : ['Product registered, document hash commitment pending on-chain'],
   };
+  const defaultRisk = mapBackendRiskAssessment(raw.risk_assessment || raw.riskAssessment, fallbackRisk);
 
   return {
     id: raw.product_id,
@@ -317,6 +334,13 @@ export async function verifyDocumentViaApi(params: {
         computedHash: data.document_hash,
         expectedHash: data.document_hash,
         matchedProduct,
+        riskAssessment: mapBackendRiskAssessment(data.risk_assessment, {
+          riskScore: 0,
+          riskLevel: 'LOW',
+          tamperingDetected: false,
+          confidence: 0,
+          reasons: [],
+        }),
         verificationTimestamp: Date.now(),
         executionTimeMs: elapsed,
       };

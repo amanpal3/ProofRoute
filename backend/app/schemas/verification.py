@@ -18,6 +18,9 @@ class RiskAssessment(BaseModel):
     reasons: List[str] = Field(default_factory=list, description="Specific explainable factor codes")
     model_version: str = "v0.1.0-rules"
     disclaimer: str = "Decision support only. Does not constitute absolute legal proof of authenticity or fraud."
+    ela_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    cmfd_score: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    font_anomaly_detected: bool = False
 
 
 class DocumentVerifyResponse(BaseModel):
