@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { X, Wallet, Shield, ArrowUpRight, Copy, Check } from 'lucide-react';
 import { truncateHash } from '@/lib/crypto';
 
+import { requestWalletConnection } from '@/lib/web3';
+
 interface Web3WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -49,19 +51,21 @@ export default function Web3WalletModal({
 }: Web3WalletModalProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState('11155111'); // Sepolia
+  const [selectedNetwork, setSelectedNetwork] = useState('31337'); // Local Anvil / Sepolia
 
   if (!isOpen) return null;
 
-  const handleConnectWallet = () => {
+  const handleConnectWallet = async () => {
     setIsConnecting(true);
-    setTimeout(() => {
-      // Deterministic demo issuer account
-      const mockIssuer = '0x1234567890123456789012345678901234567890';
-      onConnect(mockIssuer);
+    try {
+      const account = await requestWalletConnection();
+      onConnect(account);
+    } catch (err) {
+      console.error('Failed to connect wallet:', err);
+    } finally {
       setIsConnecting(false);
       onClose();
-    }, 600);
+    }
   };
 
   const copyAddress = () => {

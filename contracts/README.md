@@ -1,26 +1,30 @@
 # ⛓️ ProofRoute Smart Contracts
 
-Smart contract suite for decentralized document hash anchoring, cryptographic provenance, and role-based access management.
+Decentralized immutable product provenance registry, milestone tracking state machine, and cryptographic document hash anchoring for the ProofRoute platform.
 
 ---
 
 ## 🏗️ Architecture & Contracts
 
-- **`DocumentRegistry.sol`**:
-  - Anchors unique document hashes (Keccak-256).
-  - Records issuer address, block timestamp, metadata URI, and revocation status.
-  - Emits `DocumentRegistered` and `DocumentRevoked` events for indexers.
-- **`AccessManager.sol`**:
-  - Role-Based Access Control (RBAC) powered by OpenZeppelin `AccessControlUpgradeable`.
-  - Roles: `ADMIN_ROLE`, `ISSUER_ROLE`, `AUDITOR_ROLE`, `ORACLE_ROLE`.
+### [`ProofRouteRegistry.sol`](src/ProofRouteRegistry.sol)
+* **Product Batch Registration**: Records unique `productId`, `name`, `batchId`, `origin`, `destination`, and `manufacturer` address.
+* **Shipment Lifecycle Machine**: Enforces strictly unidirectional milestone progression (`CREATED` ➔ `IN_TRANSIT` ➔ `DELIVERED`).
+* **Cryptographic Document Anchoring**: Anchors 32-byte (`bytes32`) SHA-256 certificate hashes. Immutable once attached by the product manufacturer.
+* **Access Control**:
+  * `Manufacturer`: Registers products and commits document hashes.
+  * `Logistics Operator`: Authorized EVM address permitted to progress milestone status.
+  * `Owner / Admin`: Manages operator authorizations and emergency administrative controls via OpenZeppelin `Ownable`.
+* **Public Verification**: Gas-free `verifyDocumentHash(productId, hashToVerify)` view function enabling wallet-less consumer verification.
+* **Event Logging**: Emits indexed `ProductRegistered`, `StatusUpdated`, `DocumentHashAttached`, and `LogisticsOperatorUpdated` events for the FastAPI indexer.
 
 ---
 
 ## 🛠️ Tooling & Standards
 
-- **Language**: Solidity `^0.8.20`
-- **Framework**: [Foundry](https://book.getfoundry.sh/) (`forge`, `cast`, `anvil`)
-- **Dependencies**: OpenZeppelin Contracts
+* **Language**: Solidity `^0.8.20`
+* **Framework**: [Foundry](https://book.getfoundry.sh/) (`forge`, `cast`, `anvil`)
+* **Libraries**: OpenZeppelin Contracts v5.x
+* **Gas Optimizations**: Custom errors instead of string reverts, storage caching, packed types.
 
 ---
 
@@ -33,31 +37,39 @@ forge build
 
 ### 2. Run Test Suite
 ```bash
-# Run all unit tests
-forge test
+# Run unit & fuzz tests with verbose traces
+forge test -vvv
 
-# Run tests with verbose gas reports
+# Run with gas consumption breakdown
 forge test --gas-report
 
-# Run invariant and fuzz tests with high runs
-forge test --fuzz-runs 10000
+# Run property-based fuzz tests with 1,000 iterations
+forge test --fuzz-runs 1000
 ```
 
-### 3. Local Anvil Deployment
+### 3. Format Code
 ```bash
-# Start local node
+forge fmt
+```
+
+### 4. Local Anvil Deployment
+```bash
+# Terminal 1: Start local Anvil node (Chain ID: 31337)
 anvil
 
-# Deploy DocumentRegistry to local Anvil
-forge script script/DeployRegistry.s.sol:DeployRegistry --rpc-url http://127.0.0.1:8545 --broadcast
+# Terminal 2: Deploy ProofRouteRegistry to local Anvil
+forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast
 ```
+
+### 5. Export ABI to Frontend
+```bash
+python ../scripts/export_abi.py
+```
+Outputs the TypeScript ABI to `frontend/src/lib/contracts.ts`.
 
 ---
 
-## 🛡️ Security & Audits
-- CEI (Checks-Effects-Interactions) pattern enforced across all state transitions.
-- Static analysis with Slither:
-  ```bash
-  slither .
-  ```
-- Fuzzing and invariant invariants testing in `test/invariants/`.
+## 🛡️ Security & Quality Gates
+* **CEI Pattern**: Checks-Effects-Interactions pattern strictly applied across all mutating functions.
+* **Custom Errors**: Reverts with gas-efficient typed custom errors (`ProductAlreadyExists`, `InvalidStatusTransition`, etc.).
+* **Zero-Exposure Policy**: All deployment private keys are loaded via environment variables (`DEPLOYER_PRIVATE_KEY`).
