@@ -4,10 +4,11 @@ ML / Risk Engine API endpoint — exposes risk scoring directly per API contract
 Endpoint: POST /api/v1/ml/risk-score
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile, Form
 from pydantic import BaseModel, Field
 from app.schemas.verification import RiskAssessment
 from app.services.risk_service import RiskService
+from app.services.hashing_service import HashingService
 
 router = APIRouter(prefix="/ml", tags=["ML Risk Engine"])
 
@@ -34,3 +35,27 @@ async def compute_risk_score(req: RiskScoreRequest):
         mime_type=req.mime_type,
         product_status=req.product_status,
     )
+
+
+@router.post("/scan", response_model=RiskAssessment)
+async def scan_document_ml(
+    file: UploadFile = File(...),
+    is_authentic_on_chain: bool = Form(default=True),
+    ocr_text: str | None = Form(default=None),
+):
+    """
+    Upload a document file to execute direct ML forensics (ELA, CMFD, OCR, and risk scoring).
+    """
+    content = await file.read()
+    from ml.src.pipeline import analyze_document
+    from ml.src.integration import to_backend_response
+
+    result = analyze_document(
+        content,
+        ocr_text=ocr_text,
+        is_authentic_on_chain=is_authentic_on_chain,
+        file_size=len(content),
+        mime_type=file.content_type,
+    )
+    return RiskAssessment(**to_backend_response(result))
+

@@ -7,6 +7,7 @@ import { SAMPLE_PRODUCTS } from '@/lib/mockData';
 
 interface DocumentDropzoneProps {
   onFileProcessed: (data: {
+    file?: File;
     fileName: string;
     fileSize: number;
     mimeType: string;
@@ -38,6 +39,7 @@ export default function DocumentDropzone({
         timeMs,
       });
       onFileProcessed({
+        file,
         fileName: file.name,
         fileSize: file.size,
         mimeType: file.type || 'application/pdf',

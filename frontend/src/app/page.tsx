@@ -11,16 +11,20 @@ import {
   QrCode,
   Sparkles,
   Zap,
+  Loader2,
 } from 'lucide-react';
 import DocumentDropzone from '@/components/verification/DocumentDropzone';
 import VerificationResultCard from '@/components/verification/VerificationResultCard';
 import { VerificationResult } from '@/lib/types';
 import { verifyHashAgainstRegistry } from '@/lib/verification';
+import { verifyDocumentViaApi } from '@/lib/api';
 
 export default function HomePage() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const handleFileProcessed = (data: {
+  const handleFileProcessed = async (data: {
+    file?: File;
     fileName: string;
     fileSize: number;
     mimeType: string;
@@ -28,8 +32,30 @@ export default function HomePage() {
     timeMs: number;
     presetProductId?: string;
   }) => {
-    const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
-    setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    setIsVerifying(true);
+    try {
+      const apiResult = await verifyDocumentViaApi({
+        file: data.file,
+        docHash: data.hash,
+        productId: data.presetProductId,
+      });
+
+      if (apiResult.matchedProduct || apiResult.status !== 'NOT_REGISTERED' || !data.presetProductId) {
+        setVerificationResult({
+          ...apiResult,
+          executionTimeMs: data.timeMs + (apiResult.executionTimeMs || 0),
+        });
+        return;
+      }
+
+      const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+      setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    } catch {
+      const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+      setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   return (
@@ -117,6 +143,13 @@ export default function HomePage() {
         {/* Dropzone & Live Card */}
         <div className="space-y-6">
           <DocumentDropzone onFileProcessed={handleFileProcessed} />
+
+          {isVerifying && (
+            <div className="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-center gap-3 text-xs sm:text-sm text-indigo-200 animate-pulse">
+              <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+              <span>Running cryptographic verification & AI document forensics inspection...</span>
+            </div>
+          )}
 
           {verificationResult && (
             <div className="animate-in fade-in slide-in-from-bottom-3 duration-300">

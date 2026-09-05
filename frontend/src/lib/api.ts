@@ -332,7 +332,7 @@ export async function verifyDocumentViaApi(params: {
       return {
         status: data.status as 'VALID' | 'TAMPERED' | 'NOT_REGISTERED' | 'UNAVAILABLE',
         computedHash: data.document_hash,
-        expectedHash: data.document_hash,
+        expectedHash: matchedProduct?.documentHash || data.document_hash,
         matchedProduct,
         riskAssessment: mapBackendRiskAssessment(data.risk_assessment, {
           riskScore: 0,
@@ -357,3 +357,37 @@ export async function verifyDocumentViaApi(params: {
     executionTimeMs: Math.round((performance.now() - start) * 10) / 10,
   };
 }
+
+/**
+ * Upload a document file to run direct ML forensics analysis on the backend
+ */
+export async function scanDocumentForensics(
+  file: File,
+  isAuthenticOnChain: boolean = true
+): Promise<RiskAssessment | null> {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('is_authentic_on_chain', String(isAuthenticOnChain));
+
+    const res = await fetch(`${API_BASE_URL}/ml/scan`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return mapBackendRiskAssessment(data, {
+        riskScore: 0,
+        riskLevel: 'LOW',
+        tamperingDetected: false,
+        confidence: 0.95,
+        reasons: [],
+      });
+    }
+  } catch (e) {
+    console.warn('Backend /ml/scan unreachable:', e);
+  }
+  return null;
+}
+

@@ -441,6 +441,19 @@ class TestRiskScore:
         data = r.json()
         assert any("NON_STANDARD_MIME_TYPE" in reason for reason in data["reasons"])
 
+    @pytest.mark.asyncio
+    async def test_ml_scan_uploaded_file(self, client: AsyncClient):
+        file_bytes = b"%PDF-1.7\nSample Trade Certificate\n" + b"A" * 64
+        files = {"file": ("test_doc.pdf", file_bytes, "application/pdf")}
+        r = await client.post("/api/v1/ml/scan", files=files)
+        assert r.status_code == 200
+        data = r.json()
+        assert "risk_score" in data
+        assert "risk_level" in data
+        assert "ela_score" in data
+        assert "cmfd_score" in data
+        assert isinstance(data["reasons"], list)
+
 
 # ===========================================================================
 # Error Response Structure

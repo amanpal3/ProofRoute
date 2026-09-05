@@ -1,19 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Search, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Search, AlertCircle, Loader2 } from 'lucide-react';
 import DocumentDropzone from '@/components/verification/DocumentDropzone';
 import VerificationResultCard from '@/components/verification/VerificationResultCard';
 import { VerificationResult } from '@/lib/types';
 import { verifyHashAgainstRegistry } from '@/lib/verification';
-import { fetchProductById } from '@/lib/api';
+import { fetchProductById, verifyDocumentViaApi } from '@/lib/api';
 
 export default function PublicVerifyPage() {
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
   const [manualSearchId, setManualSearchId] = useState('');
   const [searchError, setSearchError] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const handleFileProcessed = (data: {
+  const handleFileProcessed = async (data: {
+    file?: File;
     fileName: string;
     fileSize: number;
     mimeType: string;
@@ -22,8 +24,31 @@ export default function PublicVerifyPage() {
     presetProductId?: string;
   }) => {
     setSearchError('');
-    const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
-    setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    setIsVerifying(true);
+    try {
+      const apiResult = await verifyDocumentViaApi({
+        file: data.file,
+        docHash: data.hash,
+        productId: data.presetProductId,
+      });
+
+      if (apiResult.matchedProduct || apiResult.status !== 'NOT_REGISTERED' || !data.presetProductId) {
+        setVerificationResult({
+          ...apiResult,
+          executionTimeMs: data.timeMs + (apiResult.executionTimeMs || 0),
+        });
+        return;
+      }
+
+      // Offline fallback
+      const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+      setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    } catch {
+      const result = verifyHashAgainstRegistry(data.hash, data.presetProductId);
+      setVerificationResult({ ...result, executionTimeMs: data.timeMs });
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const handleSearchById = async (e: React.FormEvent) => {
@@ -95,6 +120,14 @@ export default function PublicVerifyPage() {
       <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
         <DocumentDropzone onFileProcessed={handleFileProcessed} />
       </div>
+
+      {/* Verifying Spinner */}
+      {isVerifying && (
+        <div className="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-center gap-3 text-xs sm:text-sm text-indigo-200 animate-pulse">
+          <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+          <span>Running cryptographic verification & AI document forensics inspection...</span>
+        </div>
+      )}
 
       {/* Result Card */}
       {verificationResult && (
