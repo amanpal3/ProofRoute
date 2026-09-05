@@ -44,29 +44,29 @@ export default function ProductVerificationPage() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-4">
-        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
-        <p className="text-sm text-slate-400 font-mono">Loading on-chain provenance record…</p>
+      <div className="max-w-2xl mx-auto px-4 py-24 text-center space-y-3">
+        <Loader2 className="w-6 h-6 text-zinc-400 animate-spin mx-auto" />
+        <p className="text-xs text-zinc-500 font-mono">Loading on-chain provenance record…</p>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-6">
-        <div className="w-16 h-16 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center mx-auto">
-          <AlertTriangle className="w-8 h-8" />
+      <div className="max-w-md mx-auto px-4 py-24 text-center space-y-4">
+        <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/25 flex items-center justify-center mx-auto">
+          <AlertTriangle className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold text-white">Product Not Found</h1>
-        <p className="text-sm text-slate-400">
+        <h1 className="text-lg font-semibold text-zinc-900 dark:text-white">Product Not Found</h1>
+        <p className="text-xs text-zinc-600 dark:text-zinc-400">
           No registered on-chain commitment was found for Product ID{' '}
-          <span className="font-mono text-rose-300 font-semibold">{productId}</span>.
+          <span className="font-mono text-rose-600 dark:text-rose-300 font-medium">{productId}</span>.
         </p>
         <Link
           href="/verify"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 text-xs font-medium transition-all active:scale-[0.98]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Back to Verifier
         </Link>
       </div>
@@ -76,52 +76,52 @@ export default function ProductVerificationPage() {
   const isAuthentic = product.riskAssessment.riskLevel === 'LOW';
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
       {/* Back button & Title Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <Link
           href="/verify"
-          className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Back to Document Verifier
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => setIsQrOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs font-medium hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 text-zinc-800 dark:text-zinc-300 text-xs font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors active:scale-[0.98] shadow-sm"
           >
-            <QrCode className="w-4 h-4 text-cyan-400" />
+            <QrCode className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Show QR Code</span>
           </button>
         </div>
       </div>
 
       {/* Product Overview Header Card */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-slate-950/80 border border-white/10 backdrop-blur-xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
+      <div className="specular-card p-6 sm:p-7 rounded-xl space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-cyan-400 bg-cyan-950/60 border border-cyan-800/60 px-2.5 py-0.5 rounded-full">
+              <span className="font-mono text-[11px] text-zinc-950 dark:text-zinc-300 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 px-2 py-0.5 rounded font-bold shadow-sm">
                 {product.id}
               </span>
-              <span className="text-xs text-slate-400">• {product.category}</span>
+              <span className="text-xs text-zinc-700 dark:text-zinc-400 font-medium">• {product.category}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
               {product.name}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1">
-              <span className="flex items-center gap-1.5 text-slate-300">
-                <Building2 className="w-4 h-4 text-indigo-400" />
+            <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-800 dark:text-zinc-300 pt-0.5 font-mono">
+              <span className="flex items-center gap-1.5 text-zinc-950 dark:text-zinc-200 font-semibold">
+                <Building2 className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
                 {product.manufacturer}
               </span>
               <span className="flex items-center gap-1.5">
-                <Globe2 className="w-4 h-4 text-cyan-400" />
+                <Globe2 className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
                 {product.originCountry} ➔ {product.destinationCountry}
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-amber-400" />
+                <Calendar className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
                 Batch: {product.batchNumber}
               </span>
             </div>
@@ -130,26 +130,26 @@ export default function ProductVerificationPage() {
           {/* Verification Badge */}
           <div className="shrink-0">
             <div
-              className={`p-4 rounded-2xl border text-center space-y-1 ${
+              className={`p-3.5 rounded-lg border text-center space-y-1 shadow-sm ${
                 isAuthentic
-                  ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300'
-                  : 'bg-rose-500/10 border-rose-500/40 text-rose-300'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-400'
+                  : 'bg-rose-500/10 border-rose-500/30 text-rose-800 dark:text-rose-300'
               }`}
             >
-              <div className="flex items-center justify-center gap-2 font-mono text-xs font-bold uppercase">
+              <div className="flex items-center justify-center gap-1.5 font-mono text-[11px] font-bold uppercase">
                 {isAuthentic ? (
                   <>
-                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                     AUTHENTIC PRODUCT
                   </>
                 ) : (
                   <>
-                    <AlertTriangle className="w-5 h-5 text-rose-400" />
+                    <AlertTriangle className="w-4 h-4 text-rose-700 dark:text-rose-400" />
                     TAMPER ALERT
                   </>
                 )}
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[10px] text-zinc-700 dark:text-zinc-400 font-mono font-medium">
                 {isAuthentic ? 'Cryptographically Anchored' : 'Integrity Mismatch Detected'}
               </p>
             </div>
@@ -158,35 +158,35 @@ export default function ProductVerificationPage() {
       </div>
 
       {/* Tabs: Provenance & Milestones vs AI Tamper Forensics */}
-      <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+      <div className="flex items-center gap-1.5 border-b border-zinc-300 dark:border-zinc-800 pb-2">
         <button
           onClick={() => setActiveTab('provenance')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             activeTab === 'provenance'
-              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-white/5'
+              ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 shadow-sm font-semibold'
+              : 'text-zinc-800 hover:bg-zinc-800 hover:text-white dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
           }`}
         >
-          <Truck className="w-4 h-4" />
+          <Truck className="w-3.5 h-3.5" />
           <span>Shipment Journey & On-Chain Proof</span>
         </button>
 
         <button
           onClick={() => setActiveTab('forensics')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+          className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
             activeTab === 'forensics'
-              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-              : 'text-slate-400 hover:text-white hover:bg-white/5'
+              ? 'bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 shadow-sm font-semibold'
+              : 'text-zinc-800 hover:bg-zinc-800 hover:text-white dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
           }`}
         >
-          <Cpu className="w-4 h-4 text-cyan-300" />
+          <Cpu className="w-3.5 h-3.5 text-zinc-600 dark:text-zinc-400" />
           <span>AI Tamper Forensics & Heatmap</span>
         </button>
       </div>
 
       {/* Tab 1: Provenance & Milestones */}
       {activeTab === 'provenance' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
+        <div className="space-y-6 animate-in fade-in duration-200">
           {/* Verification Status Card */}
           <VerificationResultCard
             result={{
@@ -200,7 +200,7 @@ export default function ProductVerificationPage() {
           />
 
           {/* Shipment Journey Timeline */}
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl">
+          <div className="specular-card p-5 sm:p-7 rounded-xl">
             <ShipmentTimeline milestones={product.milestones} currentStatus={product.status} />
           </div>
         </div>

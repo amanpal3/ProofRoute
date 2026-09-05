@@ -198,16 +198,16 @@ export default function BatchRegisterForm({
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-6 glass-panel p-6 sm:p-8 rounded-3xl space-y-6">
-          <div className="flex items-center gap-2 pb-4 border-b border-white/10">
-            <PlusCircle className="w-5 h-5 text-indigo-400" />
-            <h2 className="text-base font-semibold text-white">1. Register New Product Batch</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-6 specular-card p-5 sm:p-7 rounded-xl space-y-5">
+          <div className="flex items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+            <PlusCircle className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+            <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">1. Register New Product Batch</h2>
           </div>
 
-          <form onSubmit={handleRegisterBatch} className="space-y-4 text-xs">
+          <form onSubmit={handleRegisterBatch} className="space-y-3.5 text-xs">
             <div>
-              <label htmlFor="product-name" className="block text-slate-300 font-medium mb-1">
+              <label htmlFor="product-name" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                 Product Batch Name
               </label>
               <input
@@ -216,14 +216,14 @@ export default function BatchRegisterForm({
                 required
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
-                placeholder="e.g. Pfizer BioPharma Cold-Chain Vaccines (v2.4)"
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 font-sans"
+                placeholder="e.g. BioPharma Cold-Chain Vaccines (v2.4)"
+                className="w-full px-3.5 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-zinc-500 font-sans shadow-sm"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="batch-code" className="block text-slate-300 font-medium mb-1">
+                <label htmlFor="batch-code" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                   Batch Number
                 </label>
                 <input
@@ -233,18 +233,18 @@ export default function BatchRegisterForm({
                   value={batchCode}
                   onChange={(e) => setBatchCode(e.target.value)}
                   placeholder="BATCH-2026-9901"
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 font-mono text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                  className="w-full px-3.5 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-900 dark:text-zinc-100 font-mono text-xs focus:outline-none focus:border-zinc-500 shadow-sm"
                 />
               </div>
               <div>
-                <label htmlFor="category" className="block text-slate-300 font-medium mb-1">
+                <label htmlFor="category" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                   Industry Category
                 </label>
                 <select
                   id="category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-200 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-800 dark:text-zinc-200 text-xs focus:outline-none focus:border-zinc-500 shadow-sm"
                 >
                   <option>Pharmaceuticals & Biologics</option>
                   <option>Aviation & Industrial Hardware</option>
@@ -255,7 +255,7 @@ export default function BatchRegisterForm({
             </div>
 
             <div>
-              <label htmlFor="mfg-date" className="block text-slate-300 font-medium mb-1">
+              <label htmlFor="mfg-date" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                 Manufacture Date
               </label>
               <input
@@ -264,13 +264,13 @@ export default function BatchRegisterForm({
                 required
                 value={manufactureDate}
                 onChange={(e) => setManufactureDate(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="w-full px-3.5 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-zinc-500 font-mono shadow-sm"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="origin" className="block text-slate-300 font-medium mb-1">
+                <label htmlFor="origin" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                   Country of Origin
                 </label>
                 <input
@@ -278,11 +278,11 @@ export default function BatchRegisterForm({
                   type="text"
                   value={originCountry}
                   onChange={(e) => setOriginCountry(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs"
+                  className="w-full px-3.5 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-zinc-500 shadow-sm"
                 />
               </div>
               <div>
-                <label htmlFor="destination" className="block text-slate-300 font-medium mb-1">
+                <label htmlFor="destination" className="block text-zinc-700 dark:text-zinc-300 font-medium mb-1">
                   Destination
                 </label>
                 <input
@@ -290,19 +290,19 @@ export default function BatchRegisterForm({
                   type="text"
                   value={destinationCountry}
                   onChange={(e) => setDestinationCountry(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-slate-100 text-xs"
+                  className="w-full px-3.5 py-2 bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700/80 rounded-lg text-zinc-900 dark:text-zinc-100 text-xs focus:outline-none focus:border-zinc-500 shadow-sm"
                 />
               </div>
             </div>
 
             {formError && (
-              <p className="text-rose-400 text-xs" role="alert">
+              <p className="text-rose-600 dark:text-rose-400 text-xs font-mono" role="alert">
                 {formError}
               </p>
             )}
 
             <div className="pt-2">
-              <Button type="submit" size="lg" className="w-full" disabled={busy}>
+              <Button type="submit" size="md" className="w-full" disabled={busy}>
                 {busy ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -320,9 +320,9 @@ export default function BatchRegisterForm({
         </div>
 
         <div className="lg:col-span-6 space-y-6">
-          <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4">
-            <div className="flex items-center gap-2 pb-4 border-b border-white/10">
-              <h2 className="text-base font-semibold text-white">
+          <div className="specular-card p-5 sm:p-7 rounded-xl space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+              <h2 className="text-sm font-semibold text-zinc-900 dark:text-white">
                 2. Attach Certificate & Calculate Hash
               </h2>
             </div>

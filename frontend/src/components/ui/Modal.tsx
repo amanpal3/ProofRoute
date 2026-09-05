@@ -36,14 +36,14 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
     >
       <div
         className={cn(
-          'relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl shadow-indigo-950/40',
+          'relative w-full max-w-md bg-[#0d0f14] border border-zinc-800 rounded-xl p-5 sm:p-6 shadow-2xl',
           className
         )}
       >
@@ -51,19 +51,19 @@ export default function Modal({
           type="button"
           onClick={onClose}
           disabled={closeDisabled}
-          className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-40"
+          className="absolute top-3.5 right-3.5 p-1 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/80 disabled:opacity-40 transition-colors"
           aria-label="Close dialog"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
         {(title || description) && (
-          <div className="pr-10 mb-5">
+          <div className="pr-8 mb-4">
             {title && (
-              <h3 id="modal-title" className="text-lg font-bold text-white">
+              <h3 id="modal-title" className="text-base font-semibold text-white tracking-tight">
                 {title}
               </h3>
             )}
-            {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
+            {description && <p className="text-xs text-zinc-400 mt-0.5">{description}</p>}
           </div>
         )}
         {children}

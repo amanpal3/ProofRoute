@@ -1,5 +1,8 @@
 import { ProductItem } from './types';
 
+const DEFAULT_CONTRACT_ADDRESS =
+  process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+
 export const SAMPLE_PRODUCTS: Record<string, ProductItem> = {
   'PR-8829-X': {
     id: 'PR-8829-X',
@@ -19,7 +22,7 @@ export const SAMPLE_PRODUCTS: Record<string, ProductItem> = {
     onChainRecord: {
       txHash: '0x3c99a8b1229f3d99914ea98bb9cf8872bca5743dfac98583487fba4e987c9123',
       blockNumber: 19482012,
-      contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
+      contractAddress: DEFAULT_CONTRACT_ADDRESS,
       issuerAddress: '0x1234567890123456789012345678901234567890',
       timestamp: 1772561561,
       network: 'Ethereum Sepolia Testnet (ID: 11155111)',
@@ -96,7 +99,7 @@ export const SAMPLE_PRODUCTS: Record<string, ProductItem> = {
     onChainRecord: {
       txHash: '0x8837190234cbe819238471928374019283740192837401928374019283740192',
       blockNumber: 19478110,
-      contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
+      contractAddress: DEFAULT_CONTRACT_ADDRESS,
       issuerAddress: '0x8892110293847162534182930491827364518293',
       timestamp: 1772101900,
       network: 'Ethereum Sepolia Testnet (ID: 11155111)',
@@ -161,7 +164,7 @@ export const SAMPLE_PRODUCTS: Record<string, ProductItem> = {
     onChainRecord: {
       txHash: '0x1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff',
       blockNumber: 19490101,
-      contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
+      contractAddress: DEFAULT_CONTRACT_ADDRESS,
       issuerAddress: '0x1111111111111111111111111111111111111001',
       timestamp: 1774302600,
       network: 'Ethereum Sepolia Testnet (ID: 11155111)',
@@ -225,7 +228,7 @@ export const SAMPLE_PRODUCTS: Record<string, ProductItem> = {
     onChainRecord: {
       txHash: '0xffffeeeeddddccccbbbbaaaa0000999988887777666655554444333322221111',
       blockNumber: 19490202,
-      contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
+      contractAddress: DEFAULT_CONTRACT_ADDRESS,
       issuerAddress: '0x2222222222222222222222222222222222222002',
       timestamp: 1774644600,
       network: 'Ethereum Sepolia Testnet (ID: 11155111)',

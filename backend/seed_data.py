@@ -95,6 +95,87 @@ async def seed():
         )
         session.add(e2_1)
 
+        # 3. Authentic Pune MedTech Product (Showcase)
+        p3 = Product(
+            product_id="PR-IND-1001",
+            name="Pune Medical Devices Export Batch",
+            batch_id="IND-MED-2026-1001",
+            manufacturer_address="0x1111111111111111111111111111111111111001",
+            origin="India",
+            destination="United Arab Emirates",
+            current_status=ProductStatus.DELIVERED.value,
+            document_hash="0x9a1d7f3b4c5e6a7081928374655647382910abcdefabcdefabcdefabcdefabcd",
+            is_anchored=True,
+        )
+        session.add(p3)
+
+        doc3 = Document(
+            product_id="PR-IND-1001",
+            document_hash="0x9a1d7f3b4c5e6a7081928374655647382910abcdefabcdefabcdefabcdefabcd",
+            file_name="Pune_MedTech_Quality_Certificate.pdf",
+            mime_type="application/pdf",
+            file_size=824000,
+            storage_path="uploads/Pune_MedTech_Quality_Certificate.pdf",
+            uploaded_by="0x1111111111111111111111111111111111111001",
+        )
+        session.add(doc3)
+
+        e3_1 = ShipmentEvent(
+            product_id="PR-IND-1001",
+            status="CREATED",
+            actor_address="0x1111111111111111111111111111111111111001",
+            location="Pimpri-Chinchwad, Pune, Maharashtra",
+            notes="Quality Certificate registered and SHA-256 anchored on-chain.",
+            tx_hash="0x1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+            block_number=19490101,
+        )
+        e3_2 = ShipmentEvent(
+            product_id="PR-IND-1001",
+            status="DELIVERED",
+            actor_address="0x1111111111111111111111111111111111111001",
+            location="Dubai Logistics City, UAE",
+            notes="Consignment cleared customs and accepted by distributor.",
+            tx_hash="0x2222333344445555666677778888999900001111aaaabbbbccccddddeeeeffff",
+            block_number=19490500,
+        )
+        session.add_all([e3_1, e3_2])
+
+        # 4. Tampered Surat Cotton Product (Forensics Demo)
+        p4 = Product(
+            product_id="PR-IND-2002",
+            name="Surat Organic Cotton Export Lot",
+            batch_id="IND-TEX-2026-2002",
+            manufacturer_address="0x2222222222222222222222222222222222222002",
+            origin="India",
+            destination="Germany",
+            current_status=ProductStatus.IN_TRANSIT.value,
+            document_hash="0x8b2c6e5a4d3f211099887766554433221100fedcbafedcbafedcbafedcba1234",
+            is_anchored=True,
+        )
+        session.add(p4)
+
+        doc4 = Document(
+            product_id="PR-IND-2002",
+            document_hash="0x8b2c6e5a4d3f211099887766554433221100fedcbafedcbafedcbafedcba1234",
+            file_name="Surat_Textile_Origin_Inspection.pdf",
+            mime_type="application/pdf",
+            file_size=1120000,
+            storage_path="uploads/Surat_Textile_Origin_Inspection.pdf",
+            uploaded_by="0x2222222222222222222222222222222222222002",
+        )
+        session.add(doc4)
+
+        e4_1 = ShipmentEvent(
+            product_id="PR-IND-2002",
+            status="CREATED",
+            actor_address="0x2222222222222222222222222222222222222002",
+            location="Surat Textile SEZ, Gujarat, India",
+            notes="Initial origin document registered.",
+            tx_hash="0x3333444455556666777788889999000011112222aaaabbbbccccddddeeeeffff",
+            block_number=19485000,
+        )
+        session.add(e4_1)
+
         await session.commit()
         print("Database seeded with sample products successfully!")
 

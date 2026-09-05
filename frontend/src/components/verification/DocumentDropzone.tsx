@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, CheckCircle, AlertTriangle, Zap, Sparkles, Hash } from 'lucide-react';
+import { UploadCloud, FileText, CheckCircle, AlertTriangle, Zap, Hash } from 'lucide-react';
 import { computeFileSHA256 } from '@/lib/crypto';
 import { SAMPLE_PRODUCTS } from '@/lib/mockData';
 
@@ -87,7 +87,6 @@ export default function DocumentDropzone({
 
   const loadPresetTampered = () => {
     const tampered = SAMPLE_PRODUCTS['PR-4410-T'];
-    // Tampered hash with altered byte
     const alteredHash = '0x18471cba8829ef10023741829374019283740192837401928374019283740199';
     setCurrentFile({
       name: tampered.documentName,
@@ -106,7 +105,7 @@ export default function DocumentDropzone({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Drop area */}
       <div
         onDragOver={(e) => {
@@ -116,10 +115,10 @@ export default function DocumentDropzone({
         onDragLeave={() => setIsDragOver(false)}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`relative overflow-hidden cursor-pointer rounded-2xl border-2 border-dashed p-8 sm:p-12 text-center transition-all duration-200 group ${
+        className={`relative overflow-hidden cursor-pointer rounded-2xl border border-dashed p-8 sm:p-12 text-center transition-all duration-150 group ${
           isDragOver
-            ? 'border-indigo-400 bg-indigo-500/10 scale-[1.01]'
-            : 'border-slate-800 hover:border-indigo-500/40 bg-slate-900/40 hover:bg-slate-900/60'
+            ? 'border-white bg-zinc-900 dark:border-zinc-950 dark:bg-zinc-100'
+            : 'border-zinc-800 dark:border-zinc-300 hover:border-zinc-700 dark:hover:border-zinc-400 bg-black text-white dark:bg-white dark:text-zinc-950 shadow-2xl'
         }`}
       >
         <input
@@ -130,77 +129,73 @@ export default function DocumentDropzone({
           className="hidden"
         />
 
-        {/* Ambient background hover glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:text-cyan-400 transition-all shadow-glow-sm shadow-indigo-500/10">
-            <UploadCloud className="w-8 h-8" />
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-3.5">
+          <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-white dark:bg-zinc-100 dark:border-zinc-300 dark:text-zinc-950 flex items-center justify-center group-hover:scale-105 transition-all shadow-sm">
+            <UploadCloud className="w-6 h-6" />
           </div>
 
           <div className="space-y-1">
-            <h3 className="text-base sm:text-lg font-semibold text-white">
-              Drop your Certificate or Bill of Lading here
+            <h3 className="text-base font-bold text-white dark:text-zinc-950 tracking-tight">
+              Drop Certificate of Authenticity or Bill of Lading
             </h3>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Supports <span className="text-slate-300 font-mono">PDF, PNG, JPEG</span> up to 10MB
+            <p className="text-xs text-zinc-400 dark:text-zinc-600">
+              Supports <span className="text-white dark:text-zinc-950 font-mono font-semibold">PDF, PNG, JPEG</span> up to 10MB
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/80 border border-slate-800 text-xs font-mono text-cyan-300">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>Client-side WebCrypto SHA-256 (Zero cloud leak)</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-900/90 border border-zinc-800 text-[11px] font-mono text-zinc-300 dark:bg-zinc-100 dark:border-zinc-300 dark:text-zinc-800 font-medium shadow-sm">
+            <Zap className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-600" />
+            <span>In-browser WebCrypto SHA-256 (Zero cloud leak)</span>
           </div>
         </div>
       </div>
 
       {/* Preset Fast-Testers */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-xl bg-slate-900/80 border border-white/5">
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span className="font-medium text-slate-300">Don&apos;t have a file ready?</span>
-          <span>Try instant verification presets:</span>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl bg-black text-white dark:bg-white dark:text-zinc-950 border border-zinc-900 dark:border-zinc-200 shadow-xl transition-colors">
+        <div className="flex items-center gap-2 text-xs font-medium text-zinc-300 dark:text-zinc-700">
+          <span className="font-bold text-white dark:text-zinc-950">Preset Samples:</span>
+          <span>Test without uploading a file:</span>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             type="button"
             onClick={loadPresetValid}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition-all"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-zinc-900 text-emerald-400 hover:bg-zinc-800 border border-emerald-500/40 dark:bg-emerald-50 dark:hover:bg-emerald-100 dark:text-emerald-800 dark:border-emerald-300 transition-all active:scale-[0.98] shadow-sm"
           >
             <CheckCircle className="w-3.5 h-3.5" />
-            Authentic Batch (Valid)
+            Valid Batch (PR-8829-X)
           </button>
           <button
             type="button"
             onClick={loadPresetTampered}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-all"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-zinc-900 text-rose-400 hover:bg-zinc-800 border border-rose-500/40 dark:bg-rose-50 dark:hover:bg-rose-100 dark:text-rose-800 dark:border-rose-300 transition-all active:scale-[0.98] shadow-sm"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            Altered MTR (Tampered)
+            Altered Batch (PR-4410-T)
           </button>
         </div>
       </div>
 
       {/* Current File Hashing Feedback */}
       {currentFile && (
-        <div className="p-4 rounded-xl bg-slate-900 border border-indigo-500/30 animate-in fade-in slide-in-from-top-2">
+        <div className="p-3.5 rounded-xl bg-black text-white dark:bg-white dark:text-zinc-950 border border-zinc-900 dark:border-zinc-200 animate-in fade-in duration-200 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-400">
-                <FileText className="w-5 h-5" />
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950">
+                <FileText className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white truncate max-w-xs sm:max-w-md">
+                <p className="text-xs font-bold text-white dark:text-zinc-950 truncate max-w-xs sm:max-w-md">
                   {currentFile.name}
                 </p>
-                <p className="text-xs text-slate-400 font-mono">
+                <p className="text-[11px] text-zinc-400 dark:text-zinc-600 font-mono font-medium">
                   {(currentFile.size / 1024).toFixed(1)} KB • Computed in {currentFile.timeMs}ms
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-cyan-400">
-              <Hash className="w-3 h-3 text-slate-500" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 border border-zinc-800 dark:border-zinc-300 text-[11px] font-mono font-semibold">
+              <Hash className="w-3 h-3 text-zinc-400 dark:text-zinc-600" />
               <span className="truncate max-w-[200px] sm:max-w-[280px]">
                 {currentFile.hash}
               </span>

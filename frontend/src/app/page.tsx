@@ -9,7 +9,6 @@ import {
   Lock,
   ArrowRight,
   QrCode,
-  Sparkles,
   Zap,
   Loader2,
 } from 'lucide-react';
@@ -62,97 +61,97 @@ export default function HomePage() {
     <div className="space-y-24 pb-20">
       {/* Hero Section */}
       <section className="relative pt-12 sm:pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        {/* Subtle pill badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-xs font-mono text-indigo-300 mb-8 backdrop-blur-md shadow-glow-sm shadow-indigo-500/20">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Hybrid Web3 + AI Provenance Architecture</span>
-          <span className="text-slate-600">|</span>
-          <span className="text-cyan-400 font-semibold">Zero-Gas Verifications</span>
+        {/* Subtle status badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-zinc-900/80 border border-zinc-300 dark:border-zinc-800 text-xs font-mono text-zinc-900 dark:text-zinc-300 mb-8 backdrop-blur-sm shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+          <span className="font-medium">Enterprise Provenance Engine</span>
+          <span className="text-zinc-400 dark:text-zinc-600">/</span>
+          <span className="text-zinc-700 dark:text-zinc-400">Zero-Gas Public Verification</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.1]">
-          Cryptographic Certainty. <br />
-          <span className="bg-gradient-to-r from-cyan-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">
-            AI-Powered Document Integrity.
+        <h1 className="text-4xl sm:text-6xl lg:text-[68px] font-bold tracking-[-0.03em] text-zinc-950 dark:text-white max-w-4xl mx-auto leading-[1.08]">
+          Cryptographic provenance. <br />
+          <span className="text-zinc-600 dark:text-zinc-400 font-semibold">
+            Explainable document integrity.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-6 text-base sm:text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-          Verify where international trade goods originated, inspect milestone custody transitions,
-          and detect counterfeit documents with in-browser SHA-256 anchoring and explainable forensic heatmaps.
+        <p className="mt-6 text-sm sm:text-base text-zinc-800 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed font-normal">
+          Verify origin authenticity, track custody milestones, and detect physical or digital
+          document tampering with client-side SHA-256 anchoring and explainable vision forensics.
         </p>
 
         {/* Action CTA Buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/verify"
-            className="w-full sm:w-auto flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-semibold shadow-xl shadow-indigo-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-medium text-xs border border-zinc-950 dark:border-white/20 shadow-sm transition-all active:scale-[0.98]"
           >
-            <ShieldCheck className="w-5 h-5 text-cyan-200" />
+            <ShieldCheck className="w-4 h-4 text-emerald-400 dark:text-zinc-900" />
             <span>Verify Document Now</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
 
           <Link
             href="/issuer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-medium border border-slate-700 backdrop-blur-md transition-all hover:border-slate-600"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-white hover:bg-zinc-100 text-zinc-900 dark:bg-zinc-900/90 dark:hover:bg-zinc-800 dark:text-zinc-200 font-medium text-xs border border-zinc-300 dark:border-zinc-700/80 transition-all active:scale-[0.98] shadow-sm"
           >
-            <Building2 className="w-5 h-5 text-indigo-400" />
-            <span>Issuer Portal</span>
+            <Building2 className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <span>Manufacturer Portal</span>
           </Link>
         </div>
 
-        {/* Key Metrics Counter Strip */}
-        <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto p-6 rounded-3xl bg-slate-950/70 border border-white/10 backdrop-blur-xl">
-          <div className="space-y-1">
-            <span className="text-2xl sm:text-3xl font-bold font-mono text-cyan-400">&lt; 10ms</span>
-            <p className="text-xs text-slate-400">In-Browser Hashing</p>
+        {/* Key Metrics Counter Strip (Clean tabular layout) */}
+        <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-px max-w-4xl mx-auto rounded-xl bg-zinc-300 dark:bg-zinc-800/70 border border-zinc-300 dark:border-zinc-800 overflow-hidden shadow-sm">
+          <div className="p-5 bg-white dark:bg-[#0c0d12]/90 flex flex-col items-center sm:items-start text-left">
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-zinc-950 dark:text-zinc-100">&lt; 10ms</span>
+            <p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1 font-medium">In-Browser Hashing</p>
           </div>
-          <div className="space-y-1">
-            <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-400">100%</span>
-            <p className="text-xs text-slate-400">Client-Side Privacy</p>
+          <div className="p-5 bg-white dark:bg-[#0c0d12]/90 flex flex-col items-center sm:items-start text-left">
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400">100%</span>
+            <p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1 font-medium">Client-Side Privacy</p>
           </div>
-          <div className="space-y-1">
-            <span className="text-2xl sm:text-3xl font-bold font-mono text-indigo-400">0 Gas</span>
-            <p className="text-xs text-slate-400">Public QR Verification</p>
+          <div className="p-5 bg-white dark:bg-[#0c0d12]/90 flex flex-col items-center sm:items-start text-left">
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-zinc-950 dark:text-zinc-100">0 Gas</span>
+            <p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1 font-medium">Public QR Verification</p>
           </div>
-          <div className="space-y-1">
-            <span className="text-2xl sm:text-3xl font-bold font-mono text-amber-400">TrOCR + ELA</span>
-            <p className="text-xs text-slate-400">AI Forensics Engine</p>
+          <div className="p-5 bg-white dark:bg-[#0c0d12]/90 flex flex-col items-center sm:items-start text-left">
+            <span className="text-2xl sm:text-3xl font-bold font-mono text-zinc-950 dark:text-zinc-100">TrOCR + ELA</span>
+            <p className="text-xs text-zinc-700 dark:text-zinc-400 mt-1 font-medium">Forensics Engine</p>
           </div>
         </div>
       </section>
 
       {/* Interactive Try-It Live Sandbox */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-        <div className="text-center space-y-2 mb-8">
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 uppercase tracking-wider font-semibold">
-            <Zap className="w-4 h-4" />
+        <div className="text-center space-y-1.5 mb-8">
+          <div className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-900 dark:text-zinc-300 uppercase tracking-wider font-semibold">
+            <Zap className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             Interactive Verification Sandbox
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
             Test Document Integrity in Real Time
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-            Drop an authentic certificate or a modified bill of lading to inspect the cryptographic SHA-256 match.
+          <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-400 max-w-xl mx-auto">
+            Drop an authentic certificate or an altered sample to inspect instant cryptographic hash matching.
           </p>
         </div>
 
         {/* Dropzone & Live Card */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <DocumentDropzone onFileProcessed={handleFileProcessed} />
 
           {isVerifying && (
-            <div className="p-5 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 flex items-center justify-center gap-3 text-xs sm:text-sm text-indigo-200 animate-pulse">
-              <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
-              <span>Running cryptographic verification & AI document forensics inspection...</span>
+            <div className="p-4 rounded-xl bg-white dark:bg-zinc-900/80 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center gap-2.5 text-xs text-zinc-900 dark:text-zinc-300 shadow-sm font-medium">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-700 dark:text-zinc-400" />
+              <span>Verifying hash against smart contract registry & running forensics analysis...</span>
             </div>
           )}
 
           {verificationResult && (
-            <div className="animate-in fade-in slide-in-from-bottom-3 duration-300">
+            <div className="animate-in fade-in duration-200">
               <VerificationResultCard result={verificationResult} />
             </div>
           )}
@@ -161,58 +160,58 @@ export default function HomePage() {
 
       {/* Architecture Pillars & Features Grid */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center space-y-2 mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white">
-            Engineered for International Trade Supply Chains
+        <div className="text-center space-y-1.5 mb-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
+            Engineered for International Supply Chains
           </h2>
-          <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-            Combining EVM blockchain immutability with off-chain AI forensics to solve billion-dollar document forgery.
+          <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-400 max-w-xl mx-auto">
+            Pairing EVM immutability with localized computer vision forensics to eliminate trade documentation fraud.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Card 1 */}
-          <div className="glass-panel glass-panel-hover rounded-3xl p-8 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Lock className="w-6 h-6" />
+          <div className="specular-card rounded-xl p-6 sm:p-7 space-y-3 transition-all hover:border-zinc-400 dark:hover:border-zinc-700/80">
+            <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-300 shadow-sm">
+              <Lock className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-bold text-white">On-Chain Hash Anchoring</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Manufacturers anchor cryptographic SHA-256 hashes of certificates on Ethereum EVM contracts. Zero private data or PII is ever exposed on-chain.
+            <h3 className="text-base font-bold text-zinc-950 dark:text-white tracking-tight">On-Chain Hash Anchoring</h3>
+            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
+              Manufacturers record cryptographic SHA-256 digests on EVM smart contracts. No sensitive trade secrets, PII, or document contents are ever stored on-chain.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono text-cyan-400">
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-800 dark:text-zinc-300">
               <span>ProofRouteRegistry.sol</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3" />
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="glass-panel glass-panel-hover rounded-3xl p-8 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <QrCode className="w-6 h-6" />
+          <div className="specular-card rounded-xl p-6 sm:p-7 space-y-3 transition-all hover:border-zinc-400 dark:hover:border-zinc-700/80">
+            <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-300 shadow-sm">
+              <QrCode className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-bold text-white">Wallet-Free Consumer QR</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Anyone with a smartphone camera can scan product packaging QR codes to immediately verify provenance, shipment milestones, and authenticity without paying gas or downloading a crypto wallet.
+            <h3 className="text-base font-bold text-zinc-950 dark:text-white tracking-tight">Wallet-Free Consumer QR</h3>
+            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
+              Customs inspectors and consumers scan packaging QR codes to immediately verify provenance and milestone audit trails without paying gas or configuring wallets.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono text-emerald-400">
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-mono font-medium text-emerald-700 dark:text-emerald-400">
               <span>Sub-Second Response</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3" />
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="glass-panel glass-panel-hover rounded-3xl p-8 space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-              <Cpu className="w-6 h-6" />
+          <div className="specular-card rounded-xl p-6 sm:p-7 space-y-3 transition-all hover:border-zinc-400 dark:hover:border-zinc-700/80">
+            <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-300 shadow-sm">
+              <Cpu className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-bold text-white">Explainable AI Forensics</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Error Level Analysis (ELA) and Copy-Move Forgery Detection (CMFD) detect if numbers, stamps, or signatures were digitally manipulated before uploading.
+            <h3 className="text-base font-bold text-zinc-950 dark:text-white tracking-tight">Explainable Vision Forensics</h3>
+            <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-400 leading-relaxed">
+              Error Level Analysis (ELA) and Copy-Move Forgery Detection (CMFD) detect if invoice figures, inspection stamps, or signatures were digitally manipulated.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono text-indigo-400">
+            <div className="pt-2 flex items-center gap-1.5 text-xs font-mono font-medium text-zinc-800 dark:text-zinc-300">
               <span>OpenCV + TrOCR Heuristics</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3" />
             </div>
           </div>
         </div>
@@ -220,54 +219,54 @@ export default function HomePage() {
 
       {/* End-to-End Workflow Diagram */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-12 rounded-3xl bg-slate-950/80 border border-white/10 backdrop-blur-xl">
-          <div className="max-w-3xl mb-10">
-            <span className="text-xs font-mono font-semibold text-cyan-400 uppercase tracking-wider">
+        <div className="p-6 sm:p-10 rounded-2xl bg-black text-white dark:bg-white dark:text-zinc-950 border border-zinc-900 dark:border-zinc-200 shadow-2xl transition-colors">
+          <div className="max-w-2xl mb-8">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
               Verification Pipeline
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
-              How ProofRoute Protects the Supply Chain
+            <h2 className="text-xl sm:text-2xl font-bold mt-1 tracking-tight text-white dark:text-zinc-950">
+              How ProofRoute Secures the Supply Chain
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="space-y-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center font-mono font-bold text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-2.5 p-5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-white dark:bg-zinc-50 dark:border-zinc-200 dark:text-zinc-950 shadow-sm transition-colors">
+              <div className="w-7 h-7 rounded bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                 1
               </div>
-              <h4 className="font-semibold text-white text-base">Manufacturer Registers</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Connects Web3 wallet, enters batch information, and uploads Certificate of Authenticity.
+              <h4 className="font-bold text-sm text-white dark:text-zinc-950">Manufacturer Registers</h4>
+              <p className="text-xs text-zinc-300 dark:text-zinc-600 leading-relaxed">
+                Connects Web3 wallet, inputs batch attributes, and uploads Certificate of Authenticity.
               </p>
             </div>
 
-            <div className="space-y-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <div className="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-mono font-bold text-sm">
+            <div className="space-y-2.5 p-5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-white dark:bg-zinc-50 dark:border-zinc-200 dark:text-zinc-950 shadow-sm transition-colors">
+              <div className="w-7 h-7 rounded bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                 2
               </div>
-              <h4 className="font-semibold text-white text-base">Hash Anchored On-Chain</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                SHA-256 fingerprint is committed to smart contract registry; QR code generated for packaging.
+              <h4 className="font-bold text-sm text-white dark:text-zinc-950">Hash Anchored On-Chain</h4>
+              <p className="text-xs text-zinc-300 dark:text-zinc-600 leading-relaxed">
+                SHA-256 fingerprint is committed to smart contract registry; packaging QR code is generated.
               </p>
             </div>
 
-            <div className="space-y-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-mono font-bold text-sm">
+            <div className="space-y-2.5 p-5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-white dark:bg-zinc-50 dark:border-zinc-200 dark:text-zinc-950 shadow-sm transition-colors">
+              <div className="w-7 h-7 rounded bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                 3
               </div>
-              <h4 className="font-semibold text-white text-base">Logistics Checkpoints</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Operators advance milestone status from CREATED to IN_TRANSIT and DELIVERED with audit notes.
+              <h4 className="font-bold text-sm text-white dark:text-zinc-950">Logistics Milestones</h4>
+              <p className="text-xs text-zinc-300 dark:text-zinc-600 leading-relaxed">
+                Carriers advance status from CREATED to IN_TRANSIT and DELIVERED with audit notes.
               </p>
             </div>
 
-            <div className="space-y-3 p-5 rounded-2xl bg-slate-900/60 border border-slate-800">
-              <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-mono font-bold text-sm">
+            <div className="space-y-2.5 p-5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-white dark:bg-zinc-50 dark:border-zinc-200 dark:text-zinc-950 shadow-sm transition-colors">
+              <div className="w-7 h-7 rounded bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white flex items-center justify-center font-mono font-bold text-xs shadow-sm">
                 4
               </div>
-              <h4 className="font-semibold text-white text-base">Consumer Scan & Forensics</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Public scan provides instant cryptographic proof (VALID vs TAMPERED) plus explainable AI risk scoring.
+              <h4 className="font-bold text-sm text-white dark:text-zinc-950">Inspection & Forensics</h4>
+              <p className="text-xs text-zinc-300 dark:text-zinc-600 leading-relaxed">
+                Public scan yields cryptographic verification (VALID vs TAMPERED) plus explainable AI scoring.
               </p>
             </div>
           </div>

@@ -33,12 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${jetbrains.variable} dark`}>
-      <body className="font-sans antialiased bg-proof-dark text-slate-100 min-h-screen flex flex-col relative selection:bg-indigo-500/30 selection:text-indigo-200">
-        <div className="fixed inset-0 bg-grid-pattern opacity-40 pointer-events-none z-0" />
-        <div className="ambient-glow top-0 left-1/4 w-[500px] h-[350px] bg-indigo-600/15" />
-        <div className="ambient-glow top-1/3 right-10 w-[450px] h-[350px] bg-cyan-600/10" />
-        <div className="ambient-glow bottom-10 left-10 w-[550px] h-[350px] bg-emerald-600/10" />
+    <html lang="en" className={`${jakarta.variable} ${jetbrains.variable} dark`} suppressHydrationWarning>
+      <body className="font-sans antialiased bg-[#f8f9fa] dark:bg-[#09090b] text-zinc-950 dark:text-zinc-100 min-h-screen flex flex-col relative selection:bg-zinc-900 selection:text-white dark:selection:bg-white/10 dark:selection:text-white transition-colors duration-150">
+        <div className="fixed inset-0 bg-grid-pattern opacity-70 dark:opacity-75 pointer-events-none z-0" />
+        <div className="fixed -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[450px] bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.03),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.08),transparent_70%)] pointer-events-none z-0" />
 
         <AppProviders>
           <Navbar />

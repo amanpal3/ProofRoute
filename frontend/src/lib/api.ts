@@ -121,7 +121,7 @@ function mapBackendProductToFrontend(raw: any, events: any[] = []): ProductItem 
     onChainRecord: {
       txHash: events[0]?.tx_hash || existingMock?.onChainRecord?.txHash || '0x' + '0'.repeat(64),
       blockNumber: events[0]?.block_number || existingMock?.onChainRecord?.blockNumber || 19482000,
-      contractAddress: '0x71C676D2f4C68B25e1aF28cbe9426fFF566A6b19',
+      contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x5FbDB2315678afecb367f032d93F642f64180aa3',
       issuerAddress: raw.manufacturer_address,
       timestamp: raw.created_at ? Math.floor(new Date(raw.created_at).getTime() / 1000) : Math.floor(Date.now() / 1000),
       network: 'Ethereum Sepolia Testnet (ID: 11155111)',

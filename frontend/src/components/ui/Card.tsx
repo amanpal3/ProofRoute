@@ -11,8 +11,8 @@ export default function Card({ children, className, hover = false }: CardProps) 
   return (
     <div
       className={cn(
-        'glass-panel rounded-3xl p-6 sm:p-8',
-        hover && 'glass-panel-hover',
+        'specular-card rounded-2xl p-6 sm:p-8 transition-all',
+        hover && 'hover:border-zinc-700/80 hover:bg-zinc-900/80 hover:shadow-xl',
         className
       )}
     >

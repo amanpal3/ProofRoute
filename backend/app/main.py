@@ -24,6 +24,7 @@ from app.db.session import init_db
 import app.models  # noqa: F401
 
 from app.api.v1.endpoints import health, products, documents, qr, risk
+from app.services.event_listener import event_listener
 
 
 # ---------------------------------------------------------------------------
@@ -35,8 +36,10 @@ async def lifespan(application: FastAPI):
     logger.info("Starting ProofRoute backend…")
     await init_db()
     logger.info("Database tables verified / created.")
+    event_listener.start()
     yield
     logger.info("Shutting down ProofRoute backend.")
+    await event_listener.stop()
 
 
 # ---------------------------------------------------------------------------

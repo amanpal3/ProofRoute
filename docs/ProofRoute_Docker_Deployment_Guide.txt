@@ -1,7 +1,7 @@
 ProofRoute Docker Deployment Guide
 =================================
 
-Language: Simple Hinglish
+
 Scope: This is an instruction-only guide. It does not create or modify Docker files.
 
 Important current-repository note

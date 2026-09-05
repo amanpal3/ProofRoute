@@ -51,6 +51,22 @@ class IndexerService:
         # 3. Update Domain Projections
         if product_id:
             product = await ProductRepository.get_by_id(session, product_id)
+            if not product and event_name == "ProductRegistered":
+                from app.models.product import Product
+                product = Product(
+                    product_id=product_id,
+                    name=event_args.get("name") or event_args.get("batchId") or f"Product {product_id}",
+                    batch_id=str(event_args.get("batchId", "UNKNOWN")),
+                    manufacturer_address=actor_address or "0x0000000000000000000000000000000000000000",
+                    origin=str(event_args.get("origin", "Origin Unknown")),
+                    destination=str(event_args.get("destination", "Destination Unknown")),
+                    current_status="CREATED",
+                )
+                session.add(product)
+                await session.commit()
+                # Reload product
+                product = await ProductRepository.get_by_id(session, product_id)
+
             if product:
                 if event_name == "StatusUpdated":
                     new_status_num = event_args.get("newStatus")

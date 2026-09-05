@@ -6,7 +6,14 @@ and imports all ORM models so autogenerate can detect schema changes.
 """
 
 import asyncio
+import os
+import sys
 from logging.config import fileConfig
+
+# Ensure backend root directory is in sys.path
+BACKEND_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BACKEND_ROOT not in sys.path:
+    sys.path.insert(0, BACKEND_ROOT)
 
 # pyrefly: ignore [missing-import]
 from sqlalchemy import pool
