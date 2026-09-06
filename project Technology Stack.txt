@@ -9,7 +9,6 @@ ProofRoute Technology Stack & Base
     │               1. FRONTEND / CLIENT LAYER               │
     │  Next.js 14+ (App Router) • React 18 • TypeScript     │
     │  Tailwind CSS • Wagmi 2.x • Viem 2.x • TanStack Query  │
-    
     └──────────────────────────┬─────────────────────────────┘
                                │
                 ┌──────────────┴──────────────┐
