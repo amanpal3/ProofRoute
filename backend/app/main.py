@@ -34,6 +34,17 @@ from app.services.event_listener import event_listener
 async def lifespan(application: FastAPI):
     """Create tables on startup (dev/test). Production uses Alembic migrations."""
     logger.info("Starting ProofRoute backend…")
+    if settings.SENTRY_DSN:
+        try:
+            import sentry_sdk
+            sentry_sdk.init(
+                dsn=settings.SENTRY_DSN,
+                environment=settings.APP_ENV,
+                traces_sample_rate=1.0 if settings.DEBUG else 0.2,
+            )
+            logger.info("Sentry monitoring initialized.")
+        except Exception as e:
+            logger.warning("Could not initialize Sentry: %s", str(e))
     await init_db()
     logger.info("Database tables verified / created.")
     event_listener.start()
@@ -106,6 +117,11 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         str(exc),
         exc_info=True,
     )
+    try:
+        import sentry_sdk
+        sentry_sdk.capture_exception(exc)
+    except Exception:
+        pass
     return JSONResponse(
         status_code=500,
         content={
