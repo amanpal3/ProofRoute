@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8f9fa;
+    --foreground: #09090b;
+    --card: #ffffff;
+    --card-foreground: #09090b;
+    --border: rgba(0, 0, 0, 0.12);
+    --border-hover: rgba(0, 0, 0, 0.25);
+    --accent-primary: #18181b;
+    --accent-emerald: #059669;
+    --accent-crimson: #e11d48;
+  }
+
+  .dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+    --card: rgba(18, 19, 24, 0.7);
+    --card-foreground: #fafafa;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
+    --accent-primary: #6366f1;
+    --accent-emerald: #10b981;
+    --accent-crimson: #f43f5e;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+}
+
+/* Antigravity / Linear style specular card highlight */
+.specular-card {
+  position: relative;
+  background: #ffffff;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #e4e4e7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+.specular-card::before {
+  content: "";
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent);
+  pointer-events: none;
+}
+
+.dark .specular-card {
+  background: rgba(18, 19, 26, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.dark .specular-card::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+}
+
+/* Glassmorphism primitives */
+.glass-panel {
+  position: relative;
+  background: #ffffff;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #e4e4e7;
+}
+.dark .glass-panel {
+  background: rgba(15, 16, 22, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  border-color: #d4d4d8;
+  background: #ffffff;
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+.dark .glass-panel-hover:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(22, 24, 33, 0.7);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+}
+
+.glass-card-emerald {
+  position: relative;
+  background: rgba(236, 253, 245, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px -2px rgba(16, 185, 129, 0.1);
+}
+.glass-card-emerald::before {
+  content: "";
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.35), transparent);
+  pointer-events: none;
+}
+.dark .glass-card-emerald {
+  background: rgba(6, 30, 20, 0.45);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 30px -10px rgba(16, 185, 129, 0.12);
+}
+.dark .glass-card-emerald::before {
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.4), transparent);
+}
+
+.glass-card-crimson {
+  position: relative;
+  background: rgba(255, 241, 242, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  box-shadow: 0 2px 8px -2px rgba(244, 63, 94, 0.1);
+}
+.glass-card-crimson::before {
+  content: "";
+  position: absolute;
+  inset-x: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244, 63, 94, 0.35), transparent);
+  pointer-events: none;
+}
+.dark .glass-card-crimson {
+  background: rgba(36, 10, 15, 0.45);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  box-shadow: 0 0 30px -10px rgba(244, 63, 94, 0.12);
+}
+.dark .glass-card-crimson::before {
+  background: linear-gradient(90deg, transparent, rgba(244, 63, 94, 0.4), transparent);
+}
+
+/* Subtle masked micro-grid (fades towards edges) */
+.bg-grid-pattern {
+  background-size: 36px 36px;
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, black 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, black 45%, transparent 100%);
+}
+.dark .bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #27272a;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}

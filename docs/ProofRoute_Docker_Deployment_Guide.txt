@@ -1,0 +1,479 @@
+ProofRoute Docker Deployment Guide
+=================================
+
+
+Scope: This is an instruction-only guide. It does not create or modify Docker files.
+
+Important current-repository note
+---------------------------------
+At the time of writing, the repository does not contain Dockerfile or docker-compose.yml files.
+To deploy with Docker, create the files shown below manually. This guide does not modify them automatically.
+
+Architecture
+------------
+ProofRoute has these runtime parts:
+
+1. Frontend: Next.js application in frontend/
+2. Backend: FastAPI application in backend/
+3. ML: Python package in ml/ used by the backend
+4. Database: PostgreSQL for application data
+5. Cache/queue: Redis, if enabled by the backend configuration
+6. Blockchain: External EVM RPC endpoint or a separate local node
+
+Recommended container plan:
+
+Browser -> frontend container -> backend container -> PostgreSQL
+                                      |
+                                      -> Redis
+                                      |
+                                      -> EVM RPC provider
+                                      |
+                                      -> ML package inside backend container
+
+The ML code is not required to run as a separate container in the current integration. The backend imports and runs the local ML pipeline when document bytes are available.
+
+Prerequisites
+-------------
+Install these tools on the deployment machine:
+
+- Docker Desktop for Windows, or Docker Engine on Linux
+- Docker Compose v2
+- Git
+- A valid Ethereum/EVM RPC URL if blockchain verification is enabled
+
+Check installation:
+
+    docker --version
+    docker compose version
+    git --version
+
+Step 1: Get the project
+-----------------------
+Open PowerShell or a terminal and run:
+
+    git clone <YOUR_REPOSITORY_URL>
+    cd ProofRoute
+
+Use the AML branch only when that is the branch you want to deploy:
+
+    git switch AML
+
+Do not deploy secrets from Git. Keep secrets in a local .env file or in the deployment secret manager.
+
+Step 2: Create the environment file
+------------------------------------
+Copy the example environment file:
+
+PowerShell:
+
+    Copy-Item .env.example .env
+
+Linux/macOS:
+
+    cp .env.example .env
+
+Open .env and set values appropriate for the deployment. At minimum review:
+
+    APP_ENV=production
+    DEBUG=false
+    SECRET_KEY=<LONG_RANDOM_SECRET>
+    DATABASE_URL=postgresql+asyncpg://proofroute:<PASSWORD>@postgres:5432/proofroute
+    REDIS_URL=redis://redis:6379/0
+    RPC_URL=<YOUR_EVM_RPC_URL>
+    CHAIN_ID=<YOUR_CHAIN_ID>
+    CONTRACT_REGISTRY_ADDRESS=<DEPLOYED_CONTRACT_ADDRESS>
+    PUBLIC_APP_URL=http://localhost:3000
+    NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+
+Use the exact variable names supported by the current backend and frontend configuration. Do not put private keys in the frontend environment. Do not commit .env.
+
+Step 3: Create backend/Dockerfile
+---------------------------------
+Create a new file at backend/Dockerfile with this content:
+
+    FROM python:3.11-slim
+
+    ENV PYTHONDONTWRITEBYTECODE=1
+    ENV PYTHONUNBUFFERED=1
+
+    WORKDIR /app
+
+    RUN apt-get update \
+        && apt-get install -y --no-install-recommends build-essential \
+        && rm -rf /var/lib/apt/lists/*
+
+    COPY backend/requirements.txt /app/backend/requirements.txt
+    RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+
+    COPY backend /app/backend
+    COPY ml /app/ml
+
+    WORKDIR /app/backend
+    EXPOSE 8000
+
+    CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+Why COPY ml is required:
+The backend ML integration imports the ML package from the repository. The backend image must therefore contain both backend/ and ml/.
+
+Step 4: Create frontend/Dockerfile
+----------------------------------
+Create a new file at frontend/Dockerfile with this content:
+
+    FROM node:20-alpine AS dependencies
+    WORKDIR /app
+    COPY frontend/package*.json ./
+    RUN npm ci
+
+    FROM node:20-alpine AS builder
+    WORKDIR /app
+    COPY --from=dependencies /app/node_modules ./node_modules
+    COPY frontend ./
+    ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+    ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+    RUN npm run build
+
+    FROM node:20-alpine AS runner
+    WORKDIR /app
+    ENV NODE_ENV=production
+    ENV NEXT_TELEMETRY_DISABLED=1
+    COPY --from=builder /app/public ./public
+    COPY --from=builder /app/.next/standalone ./
+    COPY --from=builder /app/.next/static ./.next/static
+    EXPOSE 3000
+    CMD ["node", "server.js"]
+
+Important:
+The current frontend next.config.mjs must enable standalone output for this Dockerfile:
+
+    output: "standalone"
+
+If standalone output is not enabled, use a simpler runner that copies .next, public, package.json, and node_modules and runs npm start. Do not assume the standalone Dockerfile works until the frontend build confirms it.
+
+Step 5: Create docker-compose.yml
+----------------------------------
+Create a new file at the repository root named docker-compose.yml:
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+          POSTGRES_DB: proofroute
+          POSTGRES_USER: proofroute
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U proofroute -d proofroute"]
+          interval: 5s
+          timeout: 5s
+          retries: 10
+
+      redis:
+        image: redis:7-alpine
+        restart: unless-stopped
+        command: redis-server --appendonly yes
+        volumes:
+          - redis_data:/data
+        healthcheck:
+          test: ["CMD", "redis-cli", "ping"]
+          interval: 5s
+          timeout: 3s
+          retries: 10
+
+      backend:
+        build:
+          context: .
+          dockerfile: backend/Dockerfile
+        restart: unless-stopped
+        env_file:
+          - .env
+        environment:
+          DATABASE_URL: postgresql+asyncpg://proofroute:${POSTGRES_PASSWORD}@postgres:5432/proofroute
+          REDIS_URL: redis://redis:6379/0
+          ML_SERVICE_URL: http://backend:8000
+        depends_on:
+          postgres:
+            condition: service_healthy
+          redis:
+            condition: service_healthy
+        ports:
+          - "8000:8000"
+        volumes:
+          - uploads_data:/app/backend/uploads
+
+      frontend:
+        build:
+          context: .
+          dockerfile: frontend/Dockerfile
+          args:
+            NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        restart: unless-stopped
+        depends_on:
+          - backend
+        ports:
+          - "3000:3000"
+
+    volumes:
+      postgres_data:
+      redis_data:
+      uploads_data:
+
+Add this value to .env:
+
+    POSTGRES_PASSWORD=<STRONG_DATABASE_PASSWORD>
+
+Do not use a weak password in production.
+
+Step 6: Check Docker configuration
+----------------------------------
+From the repository root:
+
+    docker compose config
+
+If this command prints a configuration without errors, the YAML and environment substitution are valid.
+
+If it reports an unknown environment variable, add that variable to .env or replace it with a documented value.
+
+Step 7: Build images
+--------------------
+Build both application images:
+
+    docker compose build --no-cache
+
+For normal later builds, use:
+
+    docker compose build
+
+Check created images:
+
+    docker images
+
+Step 8: Start services
+----------------------
+Start all services in the background:
+
+    docker compose up -d
+
+Check service status:
+
+    docker compose ps
+
+Expected services:
+
+- postgres: running and healthy
+- redis: running and healthy
+- backend: running
+- frontend: running
+
+Step 9: View logs
+-----------------
+Backend logs:
+
+    docker compose logs -f backend
+
+Frontend logs:
+
+    docker compose logs -f frontend
+
+All logs:
+
+    docker compose logs -f
+
+Press Ctrl+C to stop following logs. This does not stop containers.
+
+Step 10: Test backend health
+----------------------------
+From PowerShell:
+
+    Invoke-WebRequest http://localhost:8000/api/v1/health
+
+Or open in a browser:
+
+    http://localhost:8000/docs
+
+The backend API documentation should load.
+
+If the health route is configured at another path, use the route shown in the backend OpenAPI page.
+
+Step 11: Test frontend
+----------------------
+Open:
+
+    http://localhost:3000
+
+Open the forensic demo:
+
+    http://localhost:3000/forensics
+
+Try these demo product IDs:
+
+- PR-IND-1001: Pune medical device certificate, authentic, LOW risk
+- PR-IND-2002: Surat cotton report, tampered, HIGH risk
+
+Step 12: Test ML from the backend container
+--------------------------------------------
+Run the ML tests inside the backend image/container. The exact command depends on whether test files are copied into the image. If the image includes repository tests, run:
+
+    docker compose exec backend python -m pytest /app/ml/tests -q
+
+You can also test the package import:
+
+    docker compose exec backend python -c "from ml.src.pipeline import analyze_document; print(analyze_document(b'demo document', is_authentic_on_chain=True, mime_type='application/pdf'))"
+
+Expected output includes:
+
+- risk_score
+- risk_level
+- tampering_detected
+- confidence
+- reasons
+- ela_score
+- cmfd_score
+
+Remember: ML is decision support. Blockchain hash verification remains the authority for cryptographic integrity.
+
+Step 13: Database migrations
+----------------------------
+Before production use, run the project's migration process inside the backend container. The exact command depends on the configured Alembic environment:
+
+    docker compose exec backend alembic upgrade head
+
+If the backend uses a different Alembic working directory, run:
+
+    docker compose exec backend sh
+    cd /app/backend
+    alembic upgrade head
+
+Run migrations before sending production traffic.
+
+Step 14: Stop and restart
+-------------------------
+Stop containers but keep database volumes:
+
+    docker compose down
+
+Start again:
+
+    docker compose up -d
+
+Stop containers and delete their data volumes. WARNING: this deletes PostgreSQL, Redis and uploaded-file data:
+
+    docker compose down -v
+
+Restart only one service after a code change:
+
+    docker compose up -d --build backend
+    docker compose up -d --build frontend
+
+Step 15: Production checklist
+-----------------------------
+Before production deployment:
+
+- Set DEBUG=false.
+- Use a strong SECRET_KEY.
+- Use a managed PostgreSQL database or a backed-up volume.
+- Use HTTPS with a reverse proxy such as Nginx, Caddy or a cloud load balancer.
+- Restrict CORS to the real frontend domain.
+- Never expose PostgreSQL or Redis publicly.
+- Never commit .env, private keys, or RPC credentials.
+- Configure real contract addresses and chain ID.
+- Configure upload size and storage retention.
+- Add log collection and monitoring.
+- Add database backups and test restore procedures.
+- Run database migrations before deployment.
+- Pin dependency versions for reproducible builds.
+- Run backend, ML and frontend tests before building release images.
+
+Useful commands
+---------------
+Show running containers:
+
+    docker compose ps
+
+Show all logs:
+
+    docker compose logs --tail=200
+
+Inspect backend environment:
+
+    docker compose exec backend env
+
+Open a shell in backend:
+
+    docker compose exec backend sh
+
+Check backend image Python version:
+
+    docker compose exec backend python --version
+
+Remove stopped containers and unused build cache:
+
+    docker system prune
+
+Use docker system prune carefully. It can remove unused images and containers.
+
+Common problems
+---------------
+1. Frontend cannot reach backend
+
+Check NEXT_PUBLIC_API_BASE_URL. In a browser, localhost:8000 means the host machine. The browser cannot use the Docker service name backend directly.
+
+2. Backend cannot connect to PostgreSQL
+
+Inside Compose, use host postgres, not localhost:
+
+    postgresql+asyncpg://proofroute:<password>@postgres:5432/proofroute
+
+3. Backend cannot connect to Redis
+
+Inside Compose, use:
+
+    redis://redis:6379/0
+
+4. ML import error
+
+Confirm backend/Dockerfile contains:
+
+    COPY ml /app/ml
+
+Also run the import smoke test from inside the backend container.
+
+5. Frontend build fails with standalone files missing
+
+Confirm next.config.mjs has output: "standalone". Otherwise use the npm start runner image approach.
+
+6. Port already in use
+
+Check:
+
+    netstat -ano | findstr :3000
+    netstat -ano | findstr :8000
+
+Change the host-side port in docker-compose.yml, for example:
+
+    "3001:3000"
+
+The value before the colon is the host port. The value after the colon is the container port.
+
+7. Database data disappeared
+
+Do not use docker compose down -v unless you intentionally want to delete volumes. Check volumes:
+
+    docker volume ls
+
+Final simple summary
+--------------------
+1. Create backend/Dockerfile.
+2. Create frontend/Dockerfile.
+3. Create docker-compose.yml.
+4. Create .env with secure values.
+5. Run docker compose config.
+6. Run docker compose build.
+7. Run docker compose up -d.
+8. Check docker compose ps and logs.
+9. Open frontend on port 3000.
+10. Check backend docs on port 8000.
+11. Test PR-IND-1001 and PR-IND-2002.
+12. Never expose secrets or delete volumes accidentally.

@@ -1,0 +1,97 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: proofroute-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: proofroute
+      POSTGRES_USER: proofroute
+      POSTGRES_PASSWORD: proofroute_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U proofroute -d proofroute"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    container_name: proofroute-anvil
+    restart: unless-stopped
+    entrypoint: anvil
+    command: ["--host", "0.0.0.0", "--port", "8545", "--chain-id", "31337"]
+    ports:
+      - "8545:8545"
+
+  deployer:
+    image: ghcr.io/foundry-rs/foundry:latest
+    container_name: proofroute-contract-deployer
+    working_dir: /app
+    volumes:
+      - ./contracts:/app
+    depends_on:
+      - anvil
+    entrypoint: sh
+    command: -c "sleep 3 && forge script script/Deploy.s.sol --rpc-url http://anvil:8545 --broadcast || true"
+
+  ml:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ml
+    container_name: proofroute-ml
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: proofroute-backend
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+      PORT: 8000
+      DATABASE_URL: postgresql+asyncpg://proofroute:proofroute_secret@postgres:5432/proofroute
+      RPC_URL: http://anvil:8545
+      CHAIN_ID: 31337
+      CONTRACT_REGISTRY_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      ML_SERVICE_URL: http://ml:8001
+      PUBLIC_APP_URL: http://localhost:3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads_data:/app/backend/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      anvil:
+        condition: service_started
+      ml:
+        condition: service_started
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
+        NEXT_PUBLIC_RPC_URL: http://localhost:8545
+        NEXT_PUBLIC_CHAIN_ID: 31337
+        NEXT_PUBLIC_CONTRACT_ADDRESS: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    container_name: proofroute-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  uploads_data:
